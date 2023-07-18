@@ -9,6 +9,8 @@ services:
         read_only: true
     networks:
       - backend
+    environment:
+      - BACKEND_PORT=5000
     ports:
       - 80:80
       - 443:443
@@ -24,10 +26,12 @@ services:
     networks:
       - backend
     environment:
-    command: mlflow server --backend-store-uri mysql+pymysql://${}:${}@db:3306/${} --default-artifact-root s3://mlflow/ --host 0.0.0.0
+      - BACKEND=postgresql://${DB_USER}:${DB_PW}@db:${DB_PORT}/${DB_NAME}
+      - ARTIFACTS=/mlruns
+    command: mlflow server --host 0.0.0.0 --backend-store-uri $${BACKEND} --default-artifact-root $${ARTIFACTS}
 
   db:
-    image: postgre:latest
+    image: postgres:latest
     restart: always
     user: postgres
     secrets:
@@ -35,7 +39,8 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=example
+      - POSTGRES_DB=${DB_NAME:-mlflowdb}
+      - POSTGRES_USER=${DB_USER:-postgres}
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     networks:
       - backend
