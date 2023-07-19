@@ -1,4 +1,25 @@
 services:
+
+  backend:
+    command:
+      - server
+      - --backend-store-uri=postgresql://postgres:${DATABASE_PASSWORD}@database:5432/${DATABASE_NAME:-mlflowdb}
+      # - --registry-store-uri=<URI>
+      - --default-artifact-root=/mlruns
+      # - --serve-artifacts
+      # - --no-serve-artifacts
+      # - --artifacts-only
+      # - --artifacts-destination=<URI>
+      - --host=0.0.0.0
+      - --port=${BACKEND_PORT:-5000}
+      # - --workers=<workers>
+      # - --static-prefix=<static_prefix>
+      # - --gunicorn-opts=<gunicorn_opts>
+      # - --waitress-opts=<waitress_opts>
+      # - --expose-prometheus=<expose_prometheus>
+      # - --app-name=<app_name>
+      - --dev
+
   database:
     ports:
       - "5432:5432"

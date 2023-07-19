@@ -1,0 +1,14 @@
+services:
+
+  backend:
+    command:
+      - server
+      - --backend-store-uri=postgresql://postgres:${DATABASE_PASSWORD}@database:5432/${DATABASE_NAME:-mlflowdb}
+      - --default-artifact-root=/mlruns
+      - --host=0.0.0.0
+      - --port=${BACKEND_PORT:-5000}
+      - --dev
+
+  database:
+    ports:
+      - "5432:5432"

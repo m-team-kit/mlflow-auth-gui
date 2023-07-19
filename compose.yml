@@ -20,43 +20,20 @@ services:
     build: ./backend
     depends_on:
       - database
-    secrets:
-      - db-password
     networks:
       - backend
     env_file: .env
-    command:
-      - mlflow
-      - server
-      - --backend-store-uri=postgresql://${DATABASE_USER:-postgres}:`cat /run/secrets/db-password`@database:5432/${DATABASE_NAME:-mlflowdb}
-      # - --registry-store-uri=<URI>
-      - --default-artifact-root=/mlruns
-      # - --serve-artifacts
-      # - --no-serve-artifacts
-      # - --artifacts-only
-      # - --artifacts-destination=<URI>
-      - --host=0.0.0.0
-      - --port=${BACKEND_PORT:-5000}
-      # - --workers=<workers>
-      # - --static-prefix=<static_prefix>
-      # - --gunicorn-opts=<gunicorn_opts>
-      # - --waitress-opts=<waitress_opts>
-      # - --expose-prometheus=<expose_prometheus>
-      # - --app-name=<app_name>
-      - --dev
 
   database:
     image: postgres:latest
     restart: always
-    secrets:
-      - db-password
+    user: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
     env_file: .env
     environment:
       - POSTGRES_DB=${DATABASE_NAME:-mlflowdb}
-      - POSTGRES_USER=${DATABASE_USER:-postgres}
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?DATABASE_PASSWORD is not set}
     networks:
       - backend
     healthcheck:
@@ -71,8 +48,3 @@ networks:
 
 volumes:
   db-data:
-
-
-secrets:
-  db-password:
-    file: ./database/password
