@@ -6,5 +6,4 @@ server {
         proxy_pass          http://backend:${BACKEND_PORT};
         proxy_http_version  1.1;
     }
-
 }
