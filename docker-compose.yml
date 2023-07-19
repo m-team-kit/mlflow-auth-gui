@@ -18,16 +18,17 @@ services:
   backend:
     restart: always
     build: ./backend
-    container_name: mlflow_server
     depends_on:
       - database
+    secrets:
+      - db-password
     networks:
       - backend
     env_file: .env
     command:
       - mlflow
       - server
-      - --backend-store-uri=postgresql://postgres@db:5432/mlflowdb
+      - --backend-store-uri=postgresql://${DATABASE_USER:-postgres}:`cat /run/secrets/db-password`@database:5432/${DATABASE_NAME:-mlflowdb}
       # - --registry-store-uri=<URI>
       - --default-artifact-root=/mlruns
       # - --serve-artifacts
@@ -42,12 +43,11 @@ services:
       # - --waitress-opts=<waitress_opts>
       # - --expose-prometheus=<expose_prometheus>
       # - --app-name=<app_name>
-      # - --dev
+      - --dev
 
   database:
     image: postgres:latest
     restart: always
-    user: ${DATABASE_NAME:-postgres}
     secrets:
       - db-password
     volumes:
