@@ -1,0 +1,50 @@
+services:
+
+  proxy:
+    image: nginx:latest
+    volumes:
+      - ./proxy:/etc/nginx/templates:ro
+    networks:
+      - backend
+    env_file: .env
+    environment:
+      - BACKEND_PORT=${BACKEND_PORT:-5000}
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - backend
+
+  backend:
+    restart: always
+    build: ./backend
+    depends_on:
+      - database
+    networks:
+      - backend
+    env_file: .env
+
+  database:
+    image: postgres:latest
+    restart: always
+    user: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME:-mlflowdb}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?DATABASE_PASSWORD is not set}
+    networks:
+      - backend
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  backend:
+
+
+volumes:
+  db-data:

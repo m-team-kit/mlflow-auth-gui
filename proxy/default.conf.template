@@ -1,0 +1,9 @@
+server {
+    listen       80;
+    listen       443;
+    server_name  localhost;
+    location / {
+        proxy_pass          http://backend:${BACKEND_PORT};
+        proxy_http_version  1.1;
+    }
+}
