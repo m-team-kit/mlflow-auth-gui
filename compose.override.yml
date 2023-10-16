@@ -17,7 +17,7 @@ services:
       # - --gunicorn-opts=<gunicorn_opts>
       # - --waitress-opts=<waitress_opts>
       # - --expose-prometheus=<expose_prometheus>
-      # - --app-name=<app_name>
+      - --app-name=basic-auth
       - --dev
     ports:
       - "5000:5000"

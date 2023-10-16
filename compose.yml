@@ -22,14 +22,20 @@ services:
       - database
     networks:
       - backend
+    volumes:
+      - ${PWD}/backend/server:/srv
+      - user-data:/var/data/user-data
+      - app-data:/var/data/app-data
     env_file: .env
+    environment:
+      - MLFLOW_AUTH_CONFIG_PATH=/srv/auth_config.ini
 
   database:
     image: postgres:latest
     restart: always
     user: postgres
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - app-data:/var/lib/postgresql/data
     env_file: .env
     environment:
       - POSTGRES_DB=${DATABASE_NAME:?DATABASE_NAME is not set}
@@ -37,7 +43,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: ["CMD", "pg_isready"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -45,6 +51,6 @@ services:
 networks:
   backend:
 
-
 volumes:
-  db-data:
+  user-data:
+  app-data:
