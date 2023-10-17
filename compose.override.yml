@@ -5,11 +5,11 @@ services:
       - server
       - --backend-store-uri=postgresql://postgres:${DATABASE_PASSWORD}@database:5432/${DATABASE_NAME}
       # - --registry-store-uri=<URI>
-      - --default-artifact-root=/mlruns
+      # - --default-artifact-root=<URI>
       # - --serve-artifacts
       # - --no-serve-artifacts
       # - --artifacts-only
-      # - --artifacts-destination=<URI>
+      - --artifacts-destination=/mlruns
       - --host=0.0.0.0
       - --port=5000
       # - --workers=<workers>
