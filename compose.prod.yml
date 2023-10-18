@@ -1,11 +1,12 @@
 services:
-
   backend:
+    build:
+      target: production
     command:
       - server
       - --backend-store-uri=postgresql://postgres:${DATABASE_PASSWORD}@database:5432/${DATABASE_NAME}
       - --artifacts-destination=/mlruns
       - --host=0.0.0.0
       - --port=5000
-      - --app-name=basic-auth
+      - --app-name=oidc-auth
       - --dev

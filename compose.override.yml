@@ -1,6 +1,7 @@
 services:
-
   backend:
+    build:
+      target: development
     command:
       - server
       - --backend-store-uri=postgresql://postgres:${DATABASE_PASSWORD}@database:5432/${DATABASE_NAME}
@@ -17,9 +18,10 @@ services:
       # - --gunicorn-opts=<gunicorn_opts>
       # - --waitress-opts=<waitress_opts>
       # - --expose-prometheus=<expose_prometheus>
-      - --app-name=basic-auth
+      - --app-name=oidc-auth
       - --dev
     ports:
+      - "5678:5678"
       - "5000:5000"
 
   database:

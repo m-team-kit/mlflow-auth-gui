@@ -1,5 +1,4 @@
 services:
-
   proxy:
     image: nginx:latest
     volumes:
@@ -23,6 +22,7 @@ services:
     networks:
       - backend
     volumes:
+      - ${PWD}/backend/plugins:/plugins
       - ${PWD}/backend/server:/srv
       - user-data:/var/data/user-data
       - app-data:/var/data/app-data
