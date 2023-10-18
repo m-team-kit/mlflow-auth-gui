@@ -18,7 +18,7 @@
             "host": "127.0.0.1",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}",
+                    "localRoot": "${workspaceFolder}/backend",
                     "remoteRoot": "/"
                 }
             ],

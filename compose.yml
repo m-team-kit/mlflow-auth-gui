@@ -22,8 +22,7 @@ services:
     networks:
       - backend
     volumes:
-      - ${PWD}/backend/plugins:/plugins
-      - ${PWD}/backend/server:/srv
+      - ${PWD}/backend/srv:/srv
       - user-data:/var/data/user-data
       - app-data:/var/data/app-data
     env_file: .env
