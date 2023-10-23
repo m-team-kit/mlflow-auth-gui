@@ -9,7 +9,7 @@ services:
     environment:
       - BACKEND_PORT=5000
     ports:
-      - 80:80
+      - 81:80
       - 443:443
     depends_on:
       - backend
@@ -47,9 +47,24 @@ services:
       timeout: 5s
       retries: 5
 
+  backup_db:
+    build:
+      context: ./backend
+    image: postgres:latest
+    volumes:
+      - db_backups:/backups
+    environment:
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?DATABASE_PASSWORD is not set}
+    #entrypoint: ["docker-entrypoint.sh"]
+    command:
+    - "tail"
+    - "-f"
+    - "/dev/null"
+
 networks:
   backend:
 
 volumes:
   user-data:
   app-data:
+  db_backups:
