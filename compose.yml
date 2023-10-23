@@ -31,7 +31,7 @@ services:
     expose:
       - 5000
     labels:
-      traefik.http.routers.backend.rule: Host(`${DOMAIN}`) && ~PathPrefix(`/signup`)
+      traefik.http.routers.backend.rule: Host(`${DOMAIN}`) && !PathPrefix(`/signup`)
 
   database:
     image: postgres:latest
