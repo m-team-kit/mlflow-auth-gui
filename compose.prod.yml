@@ -1,4 +1,20 @@
 services:
+  reverse-proxy:
+    command:
+      # for some reason extending does *not* merge command, so I'm pasting these here as well
+      - "--entrypoints.web.address=:80"
+      - "--providers.docker"
+
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsEncrypt.acme.storage=/etc/traefik/mounted/acme.json"
+      - "--certificatesresolvers.letsEncrypt.acme.email=${LETSENCRYPT_EMAIL}"
+      - "--certificatesresolvers.letsEncrypt.acme.tlschallenge=true"
+    volumes:
+      - ./traefik/:/etc/traefik/mounted/
+    ports:
+      - "443:443"
 
   backend:
     command:
@@ -9,3 +25,6 @@ services:
       - --port=5000
       - --app-name=basic-auth
       - --dev
+    labels:
+      traefik.http.routers.backend.tls: true
+      traefik.http.routers.backend.tls.certResolver: letsEncrypt

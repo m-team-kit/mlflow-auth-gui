@@ -1,2 +1,5 @@
 .env
 basic_auth.db
+
+/traefik/
+/.idea/
