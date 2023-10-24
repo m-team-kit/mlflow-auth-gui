@@ -27,3 +27,7 @@ services:
   database:
     ports:
       - "5432:5432"
+
+  backup_db:
+    entrypoint: ["sleep"]
+    command: ["infinity"]

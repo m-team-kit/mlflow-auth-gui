@@ -48,15 +48,23 @@ services:
       retries: 5
 
   backup_db:
-    build:
-      context: ./db_backups
-    image: postgres:latest
+    restart: always
+    build: ./backup_db
+    depends_on:
+      - database
     volumes:
-      - db_backups:/backups
+      - backup_db:/backup_files
+    env_file: .env
     environment:
       - POSTGRES_DB=${DATABASE_NAME:?DATABASE_NAME is not set}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?DATABASE_PASSWORD is not set}
-    command: ["tail", "-f", "/dev/null"]
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   backend:
@@ -64,4 +72,4 @@ networks:
 volumes:
   user-data:
   app-data:
-  db_backups:
+  backup_db:
