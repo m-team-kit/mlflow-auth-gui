@@ -12,13 +12,11 @@ COPY scripts/backup_script_sqlite.sh /backup_script_sqlite.sh
 # Create a directory for backups
 #RUN mkdir -p /backups
 # Copy the cron file to the cron directory
-#COPY backup_cron /etc/cron.d/backup_cron
+COPY scripts/backup_cron /etc/cron.d/backup_cron
 # Give execution rights on the cron job
 RUN chmod 0644 /etc/cron.d/backup_cron
 # Apply cron job
 RUN crontab /etc/cron.d/backup_cron
-
-
 
 # Set the entrypoint to run the backupscripts
 ENTRYPOINT ["/bin/sh", "-c", "cron && tail -f /dev/null"]
