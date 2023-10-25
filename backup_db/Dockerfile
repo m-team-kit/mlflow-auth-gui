@@ -23,10 +23,20 @@ RUN mkdir -p /backup_files
 WORKDIR /srv
 COPY scripts/backup_script.sh backup_script.sh
 COPY scripts/backup_script_sqlite.sh backup_script_sqlite.sh
+COPY scripts/restore_manually.sh restore_manually.sh
+COPY scripts/restore_manually_sqlite.sh restore_manually_sqlite.sh
 
 # Make the scripts executable
 RUN chmod +x backup_script.sh
 RUN chmod +x backup_script_sqlite.sh
+
+# Create folder to restore files
+RUN mkdir -p /restore_files
+
+# Make the scripts executable
+RUN chmod +x restore_manually.sh
+RUN chmod +x restore_manually_sqlite.sh
+
 # Copy the cron file to the cron directory
 COPY scripts/backup_cron /etc/cron.d/backup_cron
 
