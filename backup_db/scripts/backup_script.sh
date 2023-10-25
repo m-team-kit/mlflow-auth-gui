@@ -16,11 +16,20 @@ PSQL_CONNECTION_STRING="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_P
 # Generate a timestamp for the backup file name
 TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')
 
+BACKUP_FILE="$BACKUP_DIR/backup-postgres-$TIMESTAMP.sql"
+
 # Run pg_dump to create a backup
-pg_dump "$PSQL_CONNECTION_STRING" > "$BACKUP_DIR/backup-$TIMESTAMP.sql"
+pg_dump "$PSQL_CONNECTION_STRING" -f "$BACKUP_FILE" --format=c -w
+
+if [ $? -eq 0 ]; then
+    echo "Backup completed successfully."
+else
+    echo "Failed to backup the database."
+    exit 1
+fi
 
 # Compress the SQL backup into a .tar.gz file
-tar -czf "$BACKUP_DIR/backup-$TIMESTAMP.tar.gz" "$BACKUP_DIR/backup-$TIMESTAMP.sql"
+tar -czf "$BACKUP_DIR/backup-postgres-$TIMESTAMP.tar.gz" "$BACKUP_FILE"
 
 # Remove the original SQL backup (optional, to save space)
-#rm "$BACKUP_DIR/backup-$TIMESTAMP.sql"
+rm "$BACKUP_FILE"
