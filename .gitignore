@@ -1,3 +1,5 @@
 .env
-oidc_auth.db
-mlartifacts
+basic_auth.db
+
+/traefik/
+/.idea/

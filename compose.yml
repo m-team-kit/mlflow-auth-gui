@@ -1,18 +1,18 @@
 services:
-  proxy:
-    image: nginx:latest
-    volumes:
-      - ./proxy:/etc/nginx/templates:ro
+  reverse-proxy:
+    restart: unless-stopped
+    image: traefik:v2.10
     networks:
       - backend
-    env_file: .env
-    environment:
-      - BACKEND_PORT=5000
-    ports:
-      - 81:80
-      - 443:443
+    command:
+      - "--entrypoints.web.address=:80"
+      - "--providers.docker"
     depends_on:
       - backend
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   backend:
     restart: always
@@ -28,6 +28,10 @@ services:
     env_file: .env
     environment:
       - MLFLOW_AUTH_CONFIG_PATH=/srv/auth_config.ini
+    expose:
+      - 5000
+    labels:
+      traefik.http.routers.backend.rule: Host(`${DOMAIN}`) && !PathPrefix(`/signup`)
 
   database:
     image: postgres:latest
