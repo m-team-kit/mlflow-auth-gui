@@ -33,9 +33,7 @@ COPY scripts/backup_cron /etc/cron.d/backup_cron
 # Make the script executable
 RUN chmod +x /etc/cron.d/backup_cron
 
-# start crond with log level 8 in foreground, output to stderr
-# ENTRYPOINT [ "crond" ]
-# CMD ["-f", "-d", "8"]
-
 # Start the cron service when the container runs
 CMD ["cron", "-f"]
+
+
