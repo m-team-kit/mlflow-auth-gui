@@ -25,6 +25,7 @@ services:
       - ./backend/server:/srv
       - user-data:/var/data/user-data
       - app-data:/var/data/app-data
+      - mlruns-data:/mlruns
     env_file: .env
     environment:
       - MLFLOW_AUTH_CONFIG_PATH=/srv/auth_config.ini
@@ -57,3 +58,4 @@ networks:
 volumes:
   user-data:
   app-data:
+  mlruns-data:
