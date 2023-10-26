@@ -24,7 +24,7 @@ services:
       - --host=0.0.0.0
       - --port=5000
       - --app-name=basic-auth
-      - --dev
+      - --gunicorn-opts="-t600"
     labels:
       traefik.http.routers.backend.tls: true
       traefik.http.routers.backend.tls.certResolver: letsEncrypt

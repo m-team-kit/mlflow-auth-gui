@@ -32,11 +32,11 @@ services:
     expose:
       - 5000
     labels:
-      traefik.http.routers.backend.rule: Host(`${DOMAIN}`) && !PathPrefix(`/signup`)
-      traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=12884901888
-      traefik.http.middlewares.limit.buffering.memRequestBodyBytes=10485760
-      traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=12884901888
-      traefik.http.middlewares.limit.buffering.memResponseBodyBytes=10485760
+      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && !PathPrefix(`/signup`)"
+      - "traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=12884901888"
+      - "traefik.http.middlewares.limit.buffering.memRequestBodyBytes=10485760"
+      - "traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=12884901888"
+      - "traefik.http.middlewares.limit.buffering.memResponseBodyBytes=10485760"
 
   database:
     image: postgres:latest
