@@ -25,13 +25,18 @@ services:
       - ${PWD}/backend/srv:/srv
       - user-data:/var/data/user-data
       - app-data:/var/data/app-data
+      - mlruns-data:/mlruns
     env_file: .env
     environment:
       - MLFLOW_AUTH_CONFIG_PATH=/srv/auth_config.ini
     expose:
       - 5000
     labels:
-      traefik.http.routers.backend.rule: Host(`${DOMAIN}`) && !PathPrefix(`/signup`)
+      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && !PathPrefix(`/signup`)"
+      - "traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=12884901888"
+      - "traefik.http.middlewares.limit.buffering.memRequestBodyBytes=10485760"
+      - "traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=12884901888"
+      - "traefik.http.middlewares.limit.buffering.memResponseBodyBytes=10485760"
 
   database:
     image: postgres:latest
@@ -78,4 +83,4 @@ networks:
 volumes:
   user-data:
   app-data:
-  backup_db:
+  mlruns-data:

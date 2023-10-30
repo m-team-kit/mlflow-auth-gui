@@ -25,8 +25,8 @@ services:
       - --artifacts-destination=/mlruns
       - --host=0.0.0.0
       - --port=5000
-      - --app-name=oidc-auth
-      - --dev
+      - --app-name=basic-auth
+      - --gunicorn-opts="-t600"
     labels:
       traefik.http.routers.backend.tls: true
       traefik.http.routers.backend.tls.certResolver: letsEncrypt
