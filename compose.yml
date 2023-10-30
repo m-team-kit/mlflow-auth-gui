@@ -22,7 +22,7 @@ services:
     networks:
       - backend
     volumes:
-      - ./backend/server:/srv
+      - ${PWD}/backend/srv:/srv
       - user-data:/var/data/user-data
       - app-data:/var/data/app-data
       - mlruns-data:/mlruns
@@ -44,6 +44,27 @@ services:
     user: postgres
     volumes:
       - app-data:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME:?DATABASE_NAME is not set}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?DATABASE_PASSWORD is not set}
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backup_db:
+    restart: always
+    build: ./backup_db
+    depends_on:
+      - database
+    volumes:
+      - backup_db:/backup_files
+      - user-data:/var/data/user-data
+      - app-data:/var/data/app-data
     env_file: .env
     environment:
       - POSTGRES_DB=${DATABASE_NAME:?DATABASE_NAME is not set}

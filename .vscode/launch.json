@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Local: Mlflow server",
+            "type": "python",
+            "request": "launch",
+            "module": "mlflow",
+            "env": { "FLASK_DEBUG": "1" },
+            "args": [ "server", "--app-name=oidc-auth", "--dev" ],
+            "jinja": true,
+            "justMyCode": true
+        },
+        {
+            "name": "Docker: Mlflow server",
+            "type": "python",
+            "request": "attach",
+            "port": 5678,
+            "host": "127.0.0.1",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/backend",
+                    "remoteRoot": "/"
+                }
+            ],
+        }
+    ]
+}
