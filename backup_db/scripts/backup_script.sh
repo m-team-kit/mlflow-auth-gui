@@ -1,14 +1,20 @@
 #!/bin/sh
-
 # Database details
-DB_NAME="${POSTGRES_DB:?POSTGRES_DB environment variable is not set}"
+
+
+DB_NAME="mlflowdb"
 DB_USER="postgres"
 BACKUP_DIR="/backup_files"
-
-# Database connection information
-DB_HOST="database" # Name of the PostgreSQL container
+DB_PASSWORD="password"
+DB_HOST="database"
 DB_PORT="5432"
-DB_PASSWORD="${POSTGRES_PASSWORD:?DATABASE_PASSWORD:?DATABASE_PASSWORD is not set}"
+
+
+#DB_NAME="${DATABASE_NAME:?DATABASE_NAME environment variable is not set}"
+#DB_PASSWORD="${DATABASE_PASSWORD:?DATABASE_PASSWORD  environment variable is not set}"
+#DB_HOST="${POSTGRES_HOST:?DATABASE_HOST:?DATABASE_HOST  environment variable is not set}"
+#DB_PORT="${POSTGRES_PORT:?DATABASE_PORT:?DATABASE_PORT environment variable  is not set}"
+
 
 # Construct the psql connection string
 PSQL_CONNECTION_STRING="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"

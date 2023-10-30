@@ -5,9 +5,10 @@ FROM postgres:${POSTGRES_VERSION} as backup
 
 # Install any backup tools (e.g., pg_dump)
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    # Install system updates and tools
-    cron && \
+RUN apt-get update && apt-get install -y --no-install-recommends && \
+    # Install cron tools
+    apt-get install -y cron && which cron && \
+    rm -rf /etc/cron.*/* && \
     # Clean up & back to dialog front end
     apt-get autoremove -y && \
     apt-get install -y sqlite3 && \
@@ -37,13 +38,22 @@ RUN mkdir -p /restore_files
 RUN chmod +x restore_manually.sh
 RUN chmod +x restore_manually_sqlite.sh
 
-# Copy the cron file to the cron directory
-COPY scripts/backup_cron /etc/cron.d/backup_cron
+# Start the crond service when the container runs
+# copy crontabs for root user
+COPY scripts/backup_cron.txt /etc/cron.d/backup_cron.txt
+COPY scripts/entrypoint.sh entrypoint.sh
 
-# Make the script executable
-RUN chmod +x /etc/cron.d/backup_cron
+#COPY crontab /etc/cron.d/backup_cron.txt
 
-# Start the cron service when the container runs
-CMD ["cron", "-f"]
+# Give execution rights on the cron job
+RUN chmod 0644 /etc/cron.d/backup_cron.txt
+
+# Apply cron job
+RUN crontab /etc/cron.d/backup_cron.txt
+
+# Create the log file to be able to run tail
+RUN touch /var/log/cron.log
+
+ENTRYPOINT ["entrypoint.sh"]
 
 

@@ -59,20 +59,26 @@ services:
   backup_db:
     restart: always
     build: ./backup_db
+    init: true
     depends_on:
       - database
     volumes:
       - backup_db:/backup_files
       - user-data:/var/data/user-data
       - app-data:/var/data/app-data
+      - ./backup_cron.txt:/etc/cron.d/
     env_file: .env
     environment:
       - POSTGRES_DB=${DATABASE_NAME:?DATABASE_NAME is not set}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?DATABASE_PASSWORD is not set}
+      - POSTGRES_HOST=${DATABASE_HOST:?DATABASE_HOST is not set}
+      - POSTGRES_PORT=${DATABASE_PORT:?DATABASE_PORT is not set}
+      - POSTGRES_USER="postgres"
     networks:
       - backend
+    entrypoint: ["entrypoint.sh"]
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: ["CMD", "bash"]
       interval: 10s
       timeout: 5s
       retries: 5

@@ -1,3 +1,0 @@
-0 0 * * * backup_script.sh && find /backup_files -name '*.sql.tar' -type f -mtime +14 -exec rm {} \;
-0 0 * * * backup_script_sqlite.sh && find /backup_files -name '*.sqlite.tar' -type f -mtime +14 -exec rm {} \;
-# remember to end this file with an empty new line

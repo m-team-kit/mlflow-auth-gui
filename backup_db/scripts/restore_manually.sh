@@ -23,13 +23,13 @@ mkdir -p "$RESTORE_DIR"
 
 # Find the most recent backup postgres file 
 RESTORE_FILE=$(ls -1t "$BACKUP_DIR"/*.tar.gz | grep -E 'postgres-*[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}-[0-9]{2}.tar.gz' | head -1)
-
+echo "restore file: $RESTORE_FILE"
 if [ -n "$RESTORE_FILE" ]; then
     # Extract the compressed backup to the restore directory
     tar -xzf "$RESTORE_FILE" -C "$RESTORE_DIR" --strip-components=1
 
     # Identify the extracted SQL backup file
-    SQL_BACKUP_FILE=$(ls -1 "$RESTORE_DIR" | grep '.sql$')
+    SQL_BACKUP_FILE=$(ls -1t "$RESTORE_DIR" | grep -E 'postgres-*[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}-[0-9]{2}.sql' | head -1)
     echo "sql backup file: $SQL_BACKUP_FILE"
 
     # Restore the postgres database
