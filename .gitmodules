@@ -1,3 +1,0 @@
-[submodule "mlflow-oidc"]
-	path = backend/plugins/mlflow-oidc
-	url = git@git.scc.kit.edu:m-team/ai/mlflow-oidc.git

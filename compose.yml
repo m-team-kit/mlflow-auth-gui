@@ -66,7 +66,6 @@ services:
       - backup_db:/backup_files
       - user-data:/var/data/user-data
       - app-data:/var/data/app-data
-      - ./backup_cron.txt:/etc/cron.d/
     env_file: .env
     environment:
       - POSTGRES_DB=${DATABASE_NAME:?DATABASE_NAME is not set}
@@ -76,7 +75,6 @@ services:
       - POSTGRES_USER="postgres"
     networks:
       - backend
-    entrypoint: ["entrypoint.sh"]
     healthcheck:
       test: ["CMD", "bash"]
       interval: 10s
@@ -90,3 +88,4 @@ volumes:
   user-data:
   app-data:
   mlruns-data:
+  backup_db:

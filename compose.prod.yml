@@ -17,8 +17,6 @@ services:
       - "443:443"
 
   backend:
-    build:
-      target: production
     command:
       - server
       - --backend-store-uri=postgresql://postgres:${DATABASE_PASSWORD}@database:5432/${DATABASE_NAME}

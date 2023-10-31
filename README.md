@@ -9,12 +9,12 @@ Customize deployment with a `.env` file from `.env.sample`.
 ## Development
 
 Use `docker compose up -d`, docker compose overrides automatically using
-`docker-compose.override.yml` file.
+`compose.override.yml` file.
 
 ## Production
 
 Use:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+docker compose -f compose.yml -f compose.prod.yml up -d
 ```

@@ -54,6 +54,5 @@ RUN crontab /etc/cron.d/backup_cron.txt
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
 
-ENTRYPOINT ["entrypoint.sh"]
-
-
+# Start cron as foreground process with log level 8 (log the process number of all cron jobs)
+CMD ["cron","-f","-l","8"]
