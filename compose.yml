@@ -22,7 +22,7 @@ services:
     networks:
       - backend
     volumes:
-      - ${PWD}/backend/srv:/srv
+      - ./backend/srv:/srv
       - user-data:/var/data/user-data
       - app-data:/var/data/app-data
       - mlruns-data:/mlruns
