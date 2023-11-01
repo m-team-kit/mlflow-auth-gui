@@ -1,20 +1,14 @@
 #!/bin/sh
+
 # Database details
-
-
-DB_NAME="mlflowdb"
-DB_USER="postgres"
 BACKUP_DIR="/backup_files"
-DB_PASSWORD="password"
-DB_HOST="database"
-DB_PORT="5432"
 
-
-#DB_NAME="${DATABASE_NAME:?DATABASE_NAME environment variable is not set}"
-#DB_PASSWORD="${DATABASE_PASSWORD:?DATABASE_PASSWORD  environment variable is not set}"
-#DB_HOST="${POSTGRES_HOST:?DATABASE_HOST:?DATABASE_HOST  environment variable is not set}"
-#DB_PORT="${POSTGRES_PORT:?DATABASE_PORT:?DATABASE_PORT environment variable  is not set}"
-
+# set defaults from environment variables if set
+DB_NAME="${DATABASE_NAME:?DATABASE_NAME environment variable is not set}"
+DB_USER="${DATABASE_USER:?DATABASE_USER  environment variable is not set}"
+DB_PASSWORD="${DATABASE_PASSWORD:?DATABASE_PASSWORD  environment variable is not set}"
+DB_HOST="${DATABASE_HOST:?DATABASE_HOST  environment variable is not set}"
+DB_PORT="${DATABASE_PORT:?DATABASE_PORT environment variable  is not set}"
 
 # Construct the psql connection string
 PSQL_CONNECTION_STRING="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"

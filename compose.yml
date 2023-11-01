@@ -67,12 +67,6 @@ services:
       - user-data:/var/data/user-data
       - app-data:/var/data/app-data
     env_file: .env
-    environment:
-      - POSTGRES_DB=${DATABASE_NAME:?DATABASE_NAME is not set}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?DATABASE_PASSWORD is not set}
-      - POSTGRES_HOST=${DATABASE_HOST:?DATABASE_HOST is not set}
-      - POSTGRES_PORT=${DATABASE_PORT:?DATABASE_PORT is not set}
-      - POSTGRES_USER="postgres"
     networks:
       - backend
     healthcheck:

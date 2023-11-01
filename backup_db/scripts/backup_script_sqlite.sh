@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DATABASE_FILE="/var/data/user-data/oidc_auth.db"
+DATABASE_FILE="/var/data/user-data/${AUTH_DB_FILE}"
 BACKUP_DIR="/backup_files"
 
 # Generate a timestamp for the backup file name
@@ -24,4 +24,3 @@ tar -czf "$BACKUP_DIR/backup-sqlite-$TIMESTAMP.tar.gz" "$BACKUP_FILE"
 
 # Remove the original SQL backup (optional, to save space)
 rm "$BACKUP_FILE"
-

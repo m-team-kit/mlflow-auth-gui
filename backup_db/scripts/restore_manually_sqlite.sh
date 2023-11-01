@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-DATABASE_FILE="/var/data/user-data/oidc_auth.db"
+DATABASE_FILE="/var/data/user-data/${AUTH_DB_FILE}"
 BACKUP_DIR="/backup_files"
 RESTORE_DIR="/restore_files"
 

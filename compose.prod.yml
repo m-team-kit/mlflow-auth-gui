@@ -19,7 +19,7 @@ services:
   backend:
     command:
       - server
-      - --backend-store-uri=postgresql://postgres:${DATABASE_PASSWORD}@database:5432/${DATABASE_NAME}
+      - --backend-store-uri=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
       - --artifacts-destination=/mlruns
       - --host=0.0.0.0
       - --port=5000
