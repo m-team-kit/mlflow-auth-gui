@@ -32,11 +32,32 @@ services:
     expose:
       - 5000
     labels:
-      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && !PathPrefix(`/signup`)"
+      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && !PathPrefix(`/signup`) && !PathPrefix(`/api/2.0/mlflow/users/create`)"
       - "traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=12884901888"
       - "traefik.http.middlewares.limit.buffering.memRequestBodyBytes=10485760"
       - "traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=12884901888"
       - "traefik.http.middlewares.limit.buffering.memResponseBodyBytes=10485760"
+
+  frontend:
+    restart: always
+    build:
+      context: ./frontend
+      target: production
+      args:
+        OIDC_AUTHORITY: https://aai-demo.egi.eu/auth/realms/egi
+        OIDC_CLIENT_ID: mlflow-compose
+        OIDC_REDIRECT_URI: http://localhost
+    environment:
+      MLFLOW_USERNAME: admin
+      MLFLOW_PASSWORD: password
+      MLFLOW_HOST: http://backend
+      OAUTH_USERINFO_ENDPOINT: https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/userinfo
+    networks:
+      - backend
+    depends_on:
+      - backend
+    labels:
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`) && PathPrefix(`/signup`)"
 
   database:
     image: postgres:latest
