@@ -6,7 +6,7 @@ import AuthContext from '@/components/AuthContext';
 import useSWR from 'swr';
 import Button from '@/components/Button';
 import { UserResponse } from '@/app/user/route';
-import { deleteUser, register, updatePassword } from '@/lib/clientApi';
+import { deleteUser, getUser, register, updatePassword } from '@/lib/clientApi';
 
 const NotSignedIn: FC = () => {
   const auth = useAuth();
@@ -24,14 +24,9 @@ const NotSignedIn: FC = () => {
 const LoggedIn: FC = () => {
   const auth = useAuth();
 
-  const swr = useSWR<UserResponse>('/user', async () => {
-    const response = await fetch('/user', {
-      headers: {
-        Authorization: `Bearer ${auth.user?.access_token}`,
-      },
-    });
-    return response.json();
-  });
+  const swr = useSWR<UserResponse>('/user', async () =>
+    (await getUser(auth.user?.access_token!)).json(),
+  );
 
   const { data } = swr;
 
