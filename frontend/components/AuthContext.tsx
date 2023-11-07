@@ -9,9 +9,8 @@ const oidcConfig: AuthProviderProps = {
       ? 'https://aai-demo.egi.eu/auth/realms/egi/'
       : 'https://aai.egi.eu/auth/realms/egi/'),
   client_id: process.env['NEXT_PUBLIC_OIDC_CLIENT_ID'] ?? 'eosc-performance',
-  redirect_uri: `${
-    process.env['NEXT_PUBLIC_OIDC_REDIRECT_HOST'] ?? 'http://localhost:3000'
-  }/oidc-redirect`,
+  redirect_uri:
+    process.env['NEXT_PUBLIC_OIDC_REDIRECT_URL'] ?? 'http://localhost:3000/oidc-redirect',
   scope: 'openid email profile eduperson_entitlement offline_access',
   //autoSignIn: false,
   response_type: 'code',

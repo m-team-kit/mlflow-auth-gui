@@ -46,7 +46,7 @@ services:
       args:
         OIDC_AUTHORITY: https://aai-demo.egi.eu/auth/realms/egi
         OIDC_CLIENT_ID: mlflow-compose
-        OIDC_REDIRECT_URI: http://localhost
+        OIDC_REDIRECT_URI: http://localhost:3000/oidc-redirect
     environment:
       MLFLOW_USERNAME: admin
       MLFLOW_PASSWORD: password
