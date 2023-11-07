@@ -35,14 +35,14 @@ type Permission = z.infer<typeof Permission>;
 
 const ExperimentPermission = z.object({
   experiment_id: z.string(),
-  user_id: z.string(),
+  user_id: z.number(),
   permission: Permission,
 });
 type ExperimentPermission = z.infer<typeof ExperimentPermission>;
 
 const RegisteredModelPermission = z.object({
   name: z.string(),
-  user_id: z.string(),
+  user_id: z.number(),
   permission: Permission,
 });
 type RegisteredModelPermission = z.infer<typeof RegisteredModelPermission>;
