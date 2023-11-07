@@ -43,6 +43,9 @@ export const error = (status: number, message: string) =>
   );
 type Context<T> = T extends Record<string, any> ? T : never;
 
+const requiredEntitlement =
+  process.env['REQUIRED_ENTITLEMENT'] ??
+  'urn:mace:egi.eu:group:vo.ai4eosc.eu:role=member#aai.egi.eu';
 export type UserContext = {
   user: UserinfoResponse;
 };
@@ -68,6 +71,16 @@ export const validAuthDecorator = <ExtraContext extends Exclude<Record<string, a
       );
     }
     const userInfo = userInfoValidation.data;
+
+    if (
+      userInfo.eduperson_entitlement == null ||
+      !userInfo.eduperson_entitlement.includes(requiredEntitlement)
+    ) {
+      return error(
+        403,
+        'You lack the required entitlement to access this service. Please contact the service administrator.',
+      );
+    }
 
     return target(request, { ...context, user: userInfo });
   };
