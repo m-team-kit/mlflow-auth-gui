@@ -58,12 +58,14 @@ export const MLFlowUserResponse = z.object({
 });
 export type MLFlowUserResponse = z.infer<typeof MLFlowUserResponse>;
 
+const Password = z.string().min(1, 'Password must be at least 1 character long');
+
 export const CreateUserRequest = z.object({
-  password: z.string().min(1),
+  password: Password,
 });
 export type CreateUserRequest = z.infer<typeof CreateUserRequest>;
 
 export const UpdatePasswordRequest = z.object({
-  password: z.string().min(1),
+  password: Password,
 });
 export type UpdatePasswordRequest = z.infer<typeof UpdatePasswordRequest>;
