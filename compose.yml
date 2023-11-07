@@ -23,27 +23,46 @@ services:
       - backend
     volumes:
       - ./backend/srv:/srv
-      - user-data:/var/data/user-data
-      - app-data:/var/data/app-data
-      - mlruns-data:/mlruns
+      - ${MLFLOW_BASE_PATH_LOCAL}/user-data:/var/data/user-data
+      - ${MLFLOW_BASE_PATH_LOCAL}/app-data:/var/data/app-data
+      - ${MLFLOW_BASE_PATH_LOCAL}/mlruns-data:/mlruns
     env_file: .env
     environment:
       - MLFLOW_AUTH_CONFIG_PATH=/srv/auth_config.ini
     expose:
       - 5000
     labels:
-      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && !PathPrefix(`/signup`)"
+      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && !PathPrefix(`/signup`) && !PathPrefix(`/api/2.0/mlflow/users/create`)"
       - "traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=12884901888"
       - "traefik.http.middlewares.limit.buffering.memRequestBodyBytes=10485760"
       - "traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=12884901888"
       - "traefik.http.middlewares.limit.buffering.memResponseBodyBytes=10485760"
+
+  frontend:
+    restart: always
+    build:
+      context: ./frontend
+      target: production
+      args:
+        OIDC_AUTHORITY: https://aai-demo.egi.eu/auth/realms/egi
+        OIDC_CLIENT_ID: mlflow-oidc-ai4eosc
+        OIDC_REDIRECT_URI: https://${DOMAIN}/signup
+        PRIVACY_POLICY_URL: ${PRIVACY_POLICY_URL}
+        TERMS_OF_USE_URL: ${TERMS_OF_USE_URL}
+    env_file: .env
+    networks:
+      - backend
+    depends_on:
+      - backend
+    labels:
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`) && PathPrefix(`/signup`)"
 
   database:
     image: postgres:latest
     restart: always
     user: postgres
     volumes:
-      - app-data:/var/lib/postgresql/data
+      - ${MLFLOW_BASE_PATH_LOCAL}/app-data:/var/lib/postgresql/data
     env_file: .env
     environment:
       - POSTGRES_DB=${DATABASE_NAME:?DATABASE_NAME is not set}
@@ -63,9 +82,9 @@ services:
     depends_on:
       - database
     volumes:
-      - backup_db:/backup_files
-      - user-data:/var/data/user-data
-      - app-data:/var/data/app-data
+      - ${MLFLOW_BASE_PATH_LOCAL}/backup_db:/backup_files
+      - ${MLFLOW_BASE_PATH_LOCAL}/user-data:/var/data/user-data
+      - ${MLFLOW_BASE_PATH_LOCAL}/app-data:/var/data/app-data
     env_file: .env
     networks:
       - backend
@@ -78,8 +97,8 @@ services:
 networks:
   backend:
 
-volumes:
-  user-data:
-  app-data:
-  mlruns-data:
-  backup_db:
+#volumes:
+#  user-data:
+#  app-data:
+#  mlruns-data:
+#  backup_db:

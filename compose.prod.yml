@@ -28,3 +28,8 @@ services:
     labels:
       traefik.http.routers.backend.tls: true
       traefik.http.routers.backend.tls.certResolver: letsEncrypt
+
+  frontend:
+    labels:
+      traefik.http.routers.frontend.tls: true
+      traefik.http.routers.frontend.tls.certResolver: letsEncrypt
