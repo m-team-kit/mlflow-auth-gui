@@ -40,7 +40,7 @@ const LoggedIn: FC = () => {
 
   return (
     <>
-      <h1>MLFlow User Settings</h1>
+      <h1>MLFlow {data.mlflow ? 'User Settings' : 'Registration'}</h1>
       <div>Email: {data.oidc.email}</div>
       <div>Registered: {data.mlflow != null ? 'Yes' : 'No'}</div>
 
