@@ -1,8 +1,6 @@
 import config from '../next.config';
 const prefix = config.basePath ?? '';
 
-console.log(prefix);
-
 export const getUser = async (token: string) =>
   fetch(`${prefix}/user`, {
     headers: {
