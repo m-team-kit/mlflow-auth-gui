@@ -5,7 +5,7 @@ import { useAuth } from 'react-oidc-context';
 import AuthContext from '@/components/AuthContext';
 import useSWR from 'swr';
 import Button from '@/components/Button';
-import { UserResponse } from '@/app/user/route';
+import { GetUserResponse } from '@/app/user/route';
 import { deleteUser, getUser, register, updatePassword } from '@/lib/clientApi';
 import { ifOk, jsonIfOk } from '@/lib/helpers';
 import ErrorDisplay from '@/components/ErrorDisplay';
@@ -26,11 +26,13 @@ const NotSignedIn: FC = () => {
 const LoggedIn: FC = () => {
   const auth = useAuth();
 
-  const swr = useSWR<UserResponse>('/user', async () =>
+  const swr = useSWR<GetUserResponse>('/user', async () =>
     jsonIfOk(await getUser(auth.user?.access_token!)),
   );
 
   const [error, setError] = useState<Error | null>(null);
+  const [password, setPassword] = useState<string>('');
+  const [updatedPassword, setUpdatePassword] = useState(false);
 
   const { data } = swr;
 
@@ -66,11 +68,17 @@ const LoggedIn: FC = () => {
           if (data.mlflow) {
             updatePassword(auth.user!.access_token, e.currentTarget.password.value)
               .then(ifOk)
+              .then(() => {
+                setUpdatePassword(true);
+                setTimeout(() => setUpdatePassword(false), 1500);
+                setPassword('');
+              })
               .then(() => swr.mutate())
               .catch(setError);
           } else {
             register(auth.user!.access_token, e.currentTarget.password.value)
               .then(ifOk)
+              .then(() => setPassword(''))
               .then(() => swr.mutate())
               .catch(setError);
           }
@@ -80,14 +88,22 @@ const LoggedIn: FC = () => {
         {data.mlflow == null && <h2>Create account</h2>}
         <div className="flex items-center justify-between">
           <label htmlFor="password">Password: </label>
-          <input type="password" name="password" id="password" className="rounded text-black" />
+          <input
+            type="password"
+            name="password"
+            id="password"
+            className="rounded text-black"
+            value={password}
+            minLength={1}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
         <div className="flex justify-end">
           <small>Please choose a secure password</small>
         </div>
         <div className="flex justify-end">
-          <Button type="submit" className="mt-2">
-            {data.mlflow ? 'Update' : 'Create'}
+          <Button type="submit" className={'mt-2'} disabled={password.length == 0}>
+            {updatedPassword ? 'Updated ✓' : data.mlflow ? 'Update' : 'Create'}
           </Button>
         </div>
       </form>

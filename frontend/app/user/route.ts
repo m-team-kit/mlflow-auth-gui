@@ -1,95 +1,92 @@
-import {
-  introspect,
-  mlflowUserCreate,
-  mlflowUserDelete,
-  mlflowUserGet,
-  MLFlowUserResponse,
-  UserinfoResponse,
-} from '@/lib/serverApi';
+import { mlflowUserCreate, mlflowUserDelete, mlflowUserGet } from '@/lib/serverApi';
+import { CreateUserRequest, MLFlowUserResponse, UserinfoResponse } from '@/lib/types';
+import { error, UserContext, validAuthDecorator } from '@/lib/helpers';
 
-export type UserResponse = {
+export type GetUserResponse = {
   oidc: UserinfoResponse;
   mlflow: MLFlowUserResponse | null;
 };
-export const GET = async (request: Request) => {
-  const token = request.headers.get('Authorization');
-  if (token == null || !token.startsWith('Bearer')) {
-    return new Response('Unauthorized', { status: 401 });
-  }
-
-  const userInfoR = await introspect(token);
-  if (!userInfoR.ok) {
-    return new Response('Unauthorized', { status: 401 });
-  }
-
-  const userInfo: UserinfoResponse = await userInfoR.json();
-
-  const mlflowUserR = await mlflowUserGet(userInfo.email);
-
+/**
+ * Get information about the current user
+ *
+ * The user identifier is derived from the OIDC email address, not any parameters.
+ *
+ * @param request
+ * @param context
+ */
+const getUser = async (request: Request, context: UserContext) => {
+  const mlflowUserR = await mlflowUserGet(context.user.email);
   if (mlflowUserR.status === 404) {
-    return Response.json({
-      oidc: userInfo,
-      mlflow: null,
-    });
+    return Response.json({ oidc: context.user, mlflow: null });
   }
-
   if (mlflowUserR.status !== 200) {
-    return new Response('Internal Server Error', { status: 500 });
+    console.error('getUser failed:', await mlflowUserR.text());
+    return error(500, 'Failed to get user from MLFlow');
   }
 
-  const mlflowUser: MLFlowUserResponse = await mlflowUserR.json();
+  const mlflowUserJson = await mlflowUserR.json();
+  const mlflowUserValidation = MLFlowUserResponse.safeParse(mlflowUserJson);
+  if (!mlflowUserValidation.success) {
+    console.error('getUser failed:', mlflowUserValidation.error.message, mlflowUserJson);
+    return error(500, `Invalid response from MLFlow ${mlflowUserValidation.error.message}`);
+  }
 
   return Response.json({
-    oidc: userInfo,
-    mlflow: mlflowUser,
-  });
+    oidc: context.user,
+    mlflow: mlflowUserValidation.data,
+  } satisfies GetUserResponse);
 };
+export const GET = validAuthDecorator(getUser);
 
-export const POST = async (request: Request) => {
-  const token = request.headers.get('Authorization');
-  if (token == null || !token.startsWith('Bearer')) {
-    return new Response('Unauthorized', { status: 401 });
+export type CreateUserResponse = {
+  user: MLFlowUserResponse;
+};
+/**
+ * Register a new user on MLFlow
+ *
+ * @param request
+ * @param context
+ */
+const createUser = async (request: Request, context: UserContext) => {
+  const body = CreateUserRequest.safeParse(await request.json());
+  if (!body.success) {
+    return error(422, `Validation failed: ${body.error.message}`);
   }
 
-  const userInfoR = await introspect(token);
-  if (!userInfoR.ok) {
-    return new Response('Unauthorized', { status: 401 });
-  }
-
-  const userInfo: UserinfoResponse = await userInfoR.json();
-
-  const body = await request.json();
-
-  const mlflowCreateR = await mlflowUserCreate(userInfo.email, body.password);
+  const mlflowCreateR = await mlflowUserCreate(context.user.email, body.data.password);
   if (!mlflowCreateR.ok) {
-    return new Response('Internal Server Error', { status: 500 });
+    console.error('createUser failed:', await mlflowCreateR.text());
+    return error(500, "Couldn't create user in mlflow");
   }
-  const mlflowCreate = await mlflowCreateR.json();
+
+  const mlflowCreateJson = await mlflowCreateR.json();
+  const mlflowCreateValidation = MLFlowUserResponse.safeParse(mlflowCreateJson);
+  if (!mlflowCreateValidation.success) {
+    console.error('createUser failed:', mlflowCreateValidation.error.message, mlflowCreateJson);
+    return error(500, `Invalid response from MLFlow: ${mlflowCreateValidation.error.message}`);
+  }
 
   return Response.json({
-    user: mlflowCreate,
-  });
+    user: mlflowCreateValidation.data,
+  } satisfies CreateUserResponse);
 };
+export const POST = validAuthDecorator(createUser);
 
-export const DELETE = async (request: Request) => {
-  const token = request.headers.get('Authorization');
-  if (token == null || !token.startsWith('Bearer')) {
-    return new Response('Unauthorized', { status: 401 });
-  }
-
-  const userInfoR = await introspect(token);
-  if (!userInfoR.ok) {
-    return new Response('Unauthorized', { status: 401 });
-  }
-
-  const userInfo: UserinfoResponse = await userInfoR.json();
-
-  const mlflowDeleteR = await mlflowUserDelete(userInfo.email);
+/**
+ * Delete the current user from MLFlow
+ *
+ * @param request
+ * @param context
+ */
+const deleteUser = async (request: Request, context: UserContext) => {
+  const mlflowDeleteR = await mlflowUserDelete(context.user.email);
   if (!mlflowDeleteR.ok) {
+    console.error('deleteUser failed:', await mlflowDeleteR.text());
     return new Response('Internal Server Error', { status: 500 });
   }
 
-  //return new Response('No Content', { status: 204 });
+  //return new Response(undefined, { status: 204 });
   // TODO: use 204 once next fixes their shit
-  return new Response('OK', { status: 200 });
+  return new Response(undefined, { status: 200 });
 };
+export const DELETE = validAuthDecorator(deleteUser);
