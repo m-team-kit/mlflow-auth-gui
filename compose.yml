@@ -44,14 +44,14 @@ services:
       context: ./frontend
       target: production
       args:
-        OIDC_AUTHORITY: https://aai-dev.egi.eu/auth/realms/egi
-        OIDC_CLIENT_ID: mlflow-oidc
+        OIDC_AUTHORITY: https://aai-demo.egi.eu/auth/realms/egi
+        OIDC_CLIENT_ID: mlflow-oidc-ai4eosc
         OIDC_REDIRECT_URI: http://localhost/signup
     environment:
       MLFLOW_USERNAME: admin
       MLFLOW_PASSWORD: password
       MLFLOW_HOSTNAME: http://backend:5000
-      OAUTH_USERINFO_ENDPOINT: https://aai-dev.egi.eu/auth/realms/egi/protocol/openid-connect/userinfo
+      OAUTH_USERINFO_ENDPOINT: https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/userinfo
     networks:
       - backend
     depends_on:
