@@ -13,7 +13,6 @@ RUN yarn install --immutable
 COPY app app
 COPY components components
 COPY lib lib
-COPY public public
 
 FROM base as prod-build
 
