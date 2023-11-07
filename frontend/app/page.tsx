@@ -102,7 +102,7 @@ const LoggedIn: FC = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        {termsOfUseUrl && (
+        {data.mlflow == null && termsOfUseUrl && (
           <div className="flex items-center justify-between">
             <label htmlFor="acceptedTOS">
               I accept the {termsOfUseUrl && <a href={termsOfUseUrl}>Terms of Use</a>}
@@ -127,7 +127,8 @@ const LoggedIn: FC = () => {
             type="submit"
             className={'mt-2'}
             disabled={
-              password.length == 0 || (termsOfUseUrl || privacyPolicyUrl ? !acceptedTerms : false)
+              password.length == 0 ||
+              (data.mlflow == null && (termsOfUseUrl || privacyPolicyUrl ? !acceptedTerms : false))
             }
           >
             {updatedPassword ? 'Updated ✓' : data.mlflow ? 'Update' : 'Create'}
