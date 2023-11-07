@@ -65,6 +65,9 @@ const LoggedIn: FC = () => {
           <input type="password" name="password" id="password" className="rounded text-black" />
         </div>
         <div className="flex justify-end">
+          <small>Please choose a secure password</small>
+        </div>
+        <div className="flex justify-end">
           <Button type="submit" className="mt-2">
             {data.mlflow ? 'Update' : 'Create'}
           </Button>
