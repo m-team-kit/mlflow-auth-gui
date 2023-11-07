@@ -13,6 +13,7 @@ RUN yarn install --immutable
 COPY app app
 COPY components components
 COPY lib lib
+#COPY public public
 
 FROM base as prod-build
 
@@ -41,7 +42,7 @@ WORKDIR /app
 COPY --from=prod-build /app/package.json .
 COPY --from=prod-build /app/yarn.lock .
 COPY --from=prod-build /app/next.config.js .
-COPY --from=prod-build /app/public ./public
+#COPY --from=prod-build /app/public ./public
 COPY --from=prod-build /app/.next/static ./.next/static
 COPY --from=prod-build /app/.next/standalone ./
 
