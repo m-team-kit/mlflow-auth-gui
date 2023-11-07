@@ -126,6 +126,11 @@ const LoggedIn: FC = () => {
           </Button>
         )}
         <Button onClick={() => auth.signoutRedirect()}>Logout</Button>
+        {data.mlflow != null && (
+          <Button as="a" href="/">
+            Go to mlflow →
+          </Button>
+        )}
       </div>
     </>
   );
