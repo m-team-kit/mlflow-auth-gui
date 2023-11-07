@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { FC, PropsWithChildren } from 'react';
+import { privacyPolicyUrl, termsOfUseUrl } from '@/app/links';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,15 +19,9 @@ const RootLayout: FC<PropsWithChildren> = ({ children }) => {
           <div>{children}</div>
 
           <div className="mt-4">
-            {process.env['NEXT_PUBLIC_PRIVACY_POLICY_URL'] && (
-              <a href={process.env['NEXT_PUBLIC_PRIVACY_POLICY_URL']}>Privacy Policy</a>
-            )}
-            {process.env['NEXT_PUBLIC_PRIVACY_POLICY_URL'] &&
-              process.env['NEXT_PUBLIC_TERMS_OF_USE_URL'] &&
-              ' '}
-            {process.env['NEXT_PUBLIC_TERMS_OF_USE_URL'] && (
-              <a href={process.env['NEXT_PUBLIC_TERMS_OF_USE_URL']}>Terms of Use</a>
-            )}
+            {privacyPolicyUrl && <a href={privacyPolicyUrl}>Privacy Policy</a>}
+            {privacyPolicyUrl && termsOfUseUrl && ' '}
+            {termsOfUseUrl && <a href={termsOfUseUrl}>Terms of Use</a>}
           </div>
         </main>
       </body>

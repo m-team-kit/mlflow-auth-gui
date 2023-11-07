@@ -9,6 +9,7 @@ import { GetUserResponse } from '@/app/user/route';
 import { deleteUser, getUser, register, updatePassword } from '@/lib/clientApi';
 import { ifOk, jsonIfOk } from '@/lib/helpers';
 import ErrorDisplay from '@/components/ErrorDisplay';
+import { privacyPolicyUrl, termsOfUseUrl } from '@/app/links';
 
 const NotSignedIn: FC = () => {
   const auth = useAuth();
@@ -33,6 +34,9 @@ const LoggedIn: FC = () => {
   const [error, setError] = useState<Error | null>(null);
   const [password, setPassword] = useState<string>('');
   const [updatedPassword, setUpdatePassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(
+    termsOfUseUrl == null && privacyPolicyUrl == null,
+  );
 
   const { data } = swr;
 
@@ -98,11 +102,34 @@ const LoggedIn: FC = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+        {termsOfUseUrl && (
+          <div className="flex items-center justify-between">
+            <label htmlFor="acceptedTOS">
+              I accept the {termsOfUseUrl && <a href={termsOfUseUrl}>Terms of Use</a>}
+              {termsOfUseUrl && privacyPolicyUrl && ' and '}
+              {privacyPolicyUrl && <a href={privacyPolicyUrl}>Privacy Policy</a>}
+            </label>
+            <input
+              type="checkbox"
+              name="acceptedTOS"
+              id="acceptedTOS"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              required
+            />
+          </div>
+        )}
         <div className="flex justify-end">
           <small>Please choose a secure password</small>
         </div>
         <div className="flex justify-end">
-          <Button type="submit" className={'mt-2'} disabled={password.length == 0}>
+          <Button
+            type="submit"
+            className={'mt-2'}
+            disabled={
+              password.length == 0 || (termsOfUseUrl || privacyPolicyUrl ? !acceptedTerms : false)
+            }
+          >
             {updatedPassword ? 'Updated ✓' : data.mlflow ? 'Update' : 'Create'}
           </Button>
         </div>
