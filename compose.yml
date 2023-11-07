@@ -61,6 +61,8 @@ services:
     image: postgres:latest
     restart: always
     user: postgres
+    # non-root user inside container!
+    # (host) volume has to belong to "docker" uid:gid (e.g. lxd:docker)
     volumes:
       - ${MLFLOW_BASE_PATH_LOCAL}/app-data:/var/lib/postgresql/data
     env_file: .env
