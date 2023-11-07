@@ -1,12 +1,14 @@
 'use client';
 
-import { type FC } from 'react';
+import { type FC, useState } from 'react';
 import { useAuth } from 'react-oidc-context';
 import AuthContext from '@/components/AuthContext';
 import useSWR from 'swr';
 import Button from '@/components/Button';
 import { UserResponse } from '@/app/user/route';
 import { deleteUser, getUser, register, updatePassword } from '@/lib/clientApi';
+import { ifOk, jsonIfOk } from '@/lib/helpers';
+import ErrorDisplay from '@/components/ErrorDisplay';
 
 const NotSignedIn: FC = () => {
   const auth = useAuth();
@@ -25,13 +27,27 @@ const LoggedIn: FC = () => {
   const auth = useAuth();
 
   const swr = useSWR<UserResponse>('/user', async () =>
-    (await getUser(auth.user?.access_token!)).json(),
+    jsonIfOk(await getUser(auth.user?.access_token!)),
   );
+
+  const [error, setError] = useState<Error | null>(null);
 
   const { data } = swr;
 
+  if (error != null) {
+    return <ErrorDisplay message="An error occurred" error={error} />;
+  }
+
+  if (auth.error) {
+    return <ErrorDisplay message="An error occurred during authentication" error={auth.error} />;
+  }
+
   if (auth.isLoading || auth.user == null) {
     return 'Loading OIDC...';
+  }
+
+  if (swr.error) {
+    return <ErrorDisplay message="An error occurred while fetching user data" error={swr.error} />;
   }
 
   if (!data) {
@@ -48,13 +64,15 @@ const LoggedIn: FC = () => {
         onSubmit={(e) => {
           e.preventDefault();
           if (data.mlflow) {
-            updatePassword(auth.user!.access_token, e.currentTarget.password.value).then(() =>
-              swr.mutate(),
-            );
+            updatePassword(auth.user!.access_token, e.currentTarget.password.value)
+              .then(ifOk)
+              .then(() => swr.mutate())
+              .catch(setError);
           } else {
-            register(auth.user!.access_token, e.currentTarget.password.value).then(() =>
-              swr.mutate(),
-            );
+            register(auth.user!.access_token, e.currentTarget.password.value)
+              .then(ifOk)
+              .then(() => swr.mutate())
+              .catch(setError);
           }
         }}
         className="mb-4"
@@ -82,7 +100,10 @@ const LoggedIn: FC = () => {
         {data.mlflow != null && (
           <Button
             onClick={() => {
-              deleteUser(auth.user!.access_token).then(() => swr.mutate());
+              deleteUser(auth.user!.access_token)
+                .then(ifOk)
+                .then(() => swr.mutate())
+                .catch(setError);
             }}
           >
             Delete User
