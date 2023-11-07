@@ -122,7 +122,7 @@ const LoggedIn: FC = () => {
                 .catch(setError);
             }}
           >
-            Delete User
+            Delete my account
           </Button>
         )}
         <Button onClick={() => auth.signoutRedirect()}>Logout</Button>
