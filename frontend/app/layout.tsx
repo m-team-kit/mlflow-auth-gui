@@ -14,8 +14,20 @@ const RootLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className="container prose mx-auto flex min-h-screen items-center justify-center dark:prose-invert">
+        <main className="container prose mx-auto flex min-h-screen flex-col items-center justify-center dark:prose-invert">
           <div>{children}</div>
+
+          <div className="mt-4">
+            {process.env['NEXT_PUBLIC_PRIVACY_POLICY_URL'] && (
+              <a href={process.env['NEXT_PUBLIC_PRIVACY_POLICY_URL']}>Privacy Policy</a>
+            )}
+            {process.env['NEXT_PUBLIC_PRIVACY_POLICY_URL'] &&
+              process.env['NEXT_PUBLIC_TERMS_OF_USE_URL'] &&
+              ' '}
+            {process.env['NEXT_PUBLIC_TERMS_OF_USE_URL'] && (
+              <a href={process.env['NEXT_PUBLIC_TERMS_OF_USE_URL']}>Terms of Use</a>
+            )}
+          </div>
         </main>
       </body>
     </html>
