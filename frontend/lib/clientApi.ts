@@ -1,5 +1,9 @@
 import config from '../next.config';
-import { type Permissions, GetExperimentPermissionRequest } from '@/lib/types';
+import {
+  GetExperimentPermissionRequest,
+  UpdateExperimentPermissionRequest,
+  Permission,
+} from '@/lib/types';
 const prefix = config.basePath ?? '';
 
 export const getUser = async (token: string) =>
@@ -61,7 +65,7 @@ export const updateUserExperimentPermissions = async (
   token: string,
   username: string,
   experimentId: string,
-  permission: Permissions,
+  permission: Permission,
 ) =>
   fetch(`${prefix}/user/permission/experiment`, {
     method: 'PUT',
@@ -72,7 +76,7 @@ export const updateUserExperimentPermissions = async (
       username,
       experiment_id: experimentId,
       permission,
-    } satisfies UserExperimentPermissionUpdateRequest),
+    } satisfies UpdateExperimentPermissionRequest),
   });
 
 const HOSTNAME = process.env['MLFLOW_HOSTNAME'] ?? 'http://localhost';
