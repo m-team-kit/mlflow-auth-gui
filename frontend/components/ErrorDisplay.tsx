@@ -24,13 +24,11 @@ type ErrorDisplayProps = {
   error: Error;
   message?: string;
 };
-const ErrorDisplay: FC<ErrorDisplayProps> = ({ error, message = 'An error occurred' }) => {
-  return (
-    <div>
-      <div className="text-red-500">{message}</div>
-      <ErrorDisplayError error={error} />
-    </div>
-  );
-};
+const ErrorDisplay: FC<ErrorDisplayProps> = ({ error, message = 'An error occurred' }) => (
+  <div className="prose dark:prose-invert">
+    <div className="text-red-500">{message}</div>
+    <ErrorDisplayError error={error} />
+  </div>
+);
 
 export default ErrorDisplay;

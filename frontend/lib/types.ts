@@ -24,28 +24,28 @@ export const Permissions = {
   Edit: 'EDIT',
   Manage: 'MANAGE',
   None: 'NO_PERMISSIONS',
-};
-const Permission = z.enum([
+} as const;
+export const Permission = z.enum([
   Permissions.Read,
   Permissions.Edit,
   Permissions.Manage,
   Permissions.None,
 ]);
-type Permission = z.infer<typeof Permission>;
+export type Permission = z.infer<typeof Permission>;
 
-const ExperimentPermission = z.object({
+export const ExperimentPermission = z.object({
   experiment_id: z.string(),
   user_id: z.number(),
   permission: Permission,
 });
-type ExperimentPermission = z.infer<typeof ExperimentPermission>;
+export type ExperimentPermission = z.infer<typeof ExperimentPermission>;
 
-const RegisteredModelPermission = z.object({
+export const RegisteredModelPermission = z.object({
   name: z.string(),
   user_id: z.number(),
   permission: Permission,
 });
-type RegisteredModelPermission = z.infer<typeof RegisteredModelPermission>;
+export type RegisteredModelPermission = z.infer<typeof RegisteredModelPermission>;
 
 export const MLFlowUserResponse = z.object({
   user: z.object({
@@ -58,6 +58,23 @@ export const MLFlowUserResponse = z.object({
 });
 export type MLFlowUserResponse = z.infer<typeof MLFlowUserResponse>;
 
+export const Tag = z.object({
+  key: z.string(),
+  value: z.string(),
+});
+export type Tag = z.infer<typeof Tag>;
+
+export const Experiment = z.object({
+  experiment_id: z.string(),
+  name: z.string(),
+  artifact_location: z.string(),
+  lifecycle_stage: z.string(),
+  last_update_time: z.number(),
+  creation_time: z.number(),
+  tags: z.array(Tag),
+});
+export type Experiment = z.infer<typeof Experiment>;
+
 const Password = z.string().min(1, 'Password must be at least 1 character long');
 
 export const CreateUserRequest = z.object({
@@ -69,3 +86,21 @@ export const UpdatePasswordRequest = z.object({
   password: Password,
 });
 export type UpdatePasswordRequest = z.infer<typeof UpdatePasswordRequest>;
+
+export const GetExperimentPermissionRequest = z.object({
+  username: z.string(),
+  experiment_id: z.string(),
+});
+export type GetExperimentPermissionRequest = z.infer<typeof GetExperimentPermissionRequest>;
+
+export const UpdateExperimentPermissionRequest = z.object({
+  username: z.string(),
+  experiment_id: z.string(),
+  permission: Permission,
+});
+export type UpdateExperimentPermissionRequest = z.infer<typeof UpdateExperimentPermissionRequest>;
+
+export const ExperimentPermissionResponse = z.object({
+  experiment_permission: ExperimentPermission,
+});
+export type ExperimentPermissionResponse = z.infer<typeof ExperimentPermissionResponse>;

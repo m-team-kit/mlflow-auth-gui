@@ -1,3 +1,5 @@
+import { Permission } from '@/lib/types';
+
 const localApiAuthorization = `Basic ${Buffer.from(
   process.env['MLFLOW_USERNAME'] + ':' + process.env['MLFLOW_PASSWORD'],
 ).toString('base64')}`;
@@ -64,5 +66,54 @@ export const mlflowUserDelete = async (username: string) =>
     },
     body: JSON.stringify({
       username,
+    }),
+  });
+
+export const mlflowExperimentPermissionGet = async (username: string, experimentId: string) =>
+  fetch(
+    `${HOSTNAME}/api/2.0/mlflow/experiments/permissions/get?${new URLSearchParams({
+      username: username,
+      experiment_id: experimentId,
+    })}`,
+    {
+      headers: {
+        Authorization: localApiAuthorization,
+      },
+    },
+  );
+
+export const mlflowExperimentPermissionCreate = async (
+  username: string,
+  experimentId: string,
+  permission: Permission,
+) =>
+  fetch(`${HOSTNAME}/api/2.0/mlflow/experiments/permissions/create`, {
+    method: 'POST',
+    headers: {
+      Authorization: localApiAuthorization,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      experiment_id: experimentId,
+      username,
+      permission,
+    }),
+  });
+
+export const mlflowExperimentPermissionUpdate = async (
+  username: string,
+  experimentId: string,
+  permission: Permission,
+) =>
+  fetch(`${HOSTNAME}/api/2.0/mlflow/experiments/permissions/update`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: localApiAuthorization,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      experiment_id: experimentId,
+      username,
+      permission,
     }),
   });

@@ -5,11 +5,14 @@ import { useAuth } from 'react-oidc-context';
 import AuthContext from '@/components/AuthContext';
 import useSWR from 'swr';
 import Button from '@/components/Button';
-import { GetUserResponse } from '@/app/user/route';
+import { GetMeResponse } from '@/app/user/me/route';
 import { deleteUser, getUser, register, updatePassword } from '@/lib/clientApi';
 import { ifOk, jsonIfOk } from '@/lib/helpers';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import { privacyPolicyUrl, termsOfUseUrl } from '@/app/links';
+import ManageModel from '@/components/ManageModel';
+import ManageExperiment from '@/components/ManageExperiment';
+import { Permissions } from '@/lib/types';
 
 const NotSignedIn: FC = () => {
   const auth = useAuth();
@@ -27,7 +30,7 @@ const NotSignedIn: FC = () => {
 const LoggedIn: FC = () => {
   const auth = useAuth();
 
-  const swr = useSWR<GetUserResponse>('/user', async () =>
+  const swr = useSWR<GetMeResponse>('/user', async () =>
     jsonIfOk(await getUser(auth.user?.access_token!)),
   );
 
@@ -39,6 +42,9 @@ const LoggedIn: FC = () => {
   );
 
   const { data } = swr;
+
+  const [manageModel, setManageModel] = useState<string | null>(null);
+  const [manageExperiment, setManageExperiment] = useState<string | null>(null);
 
   if (error != null) {
     return <ErrorDisplay message="An error occurred" error={error} />;
@@ -70,6 +76,14 @@ const LoggedIn: FC = () => {
       )}
       <div>Registered: {data.mlflow != null ? 'Yes' : 'No'}</div>
       {data.mlflow && <div>Admin: {data.mlflow.user.is_admin ? 'Yes' : 'No'}</div>}
+
+      {manageModel && <ManageModel modelName={manageModel} />}
+      {manageExperiment && (
+        <ManageExperiment
+          experimentId={manageExperiment}
+          onHide={() => setManageExperiment(null)}
+        />
+      )}
 
       <form
         onSubmit={(e) => {
@@ -165,7 +179,13 @@ const LoggedIn: FC = () => {
                       )}
                     </td>
                     <td>
-                      {permission.permission ? <Button>Manage</Button> : permission.permission}
+                      {permission.permission === Permissions.Manage ? (
+                        <Button onClick={() => setManageExperiment(permission.experiment_id)}>
+                          Manage
+                        </Button>
+                      ) : (
+                        permission.permission
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -199,7 +219,13 @@ const LoggedIn: FC = () => {
                       )}
                     </td>
                     <td>
-                      {permission.permission ? <Button>Manage</Button> : permission.permission}
+                      {permission.permission === Permissions.Manage ? (
+                        <Button onClick={() => setManageModel(permission.name)} disabled>
+                          Manage
+                        </Button>
+                      ) : (
+                        permission.permission
+                      )}
                     </td>
                   </tr>
                 ))}
