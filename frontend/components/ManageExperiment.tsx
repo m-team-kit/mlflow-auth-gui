@@ -38,7 +38,7 @@ const ManageExperiment: FC<ManageExperimentProps> = ({ experimentId, onHide }) =
 
   const experiment = useSWR<Experiment>(
     ['experiment', experimentId],
-    async () => jsonIfOk(await getExperiment(experimentId)),
+    async () => jsonIfOk(await getExperiment(auth.user!.access_token, experimentId)),
     {
       revalidateOnFocus: false,
       shouldRetryOnError: false,
@@ -64,11 +64,7 @@ const ManageExperiment: FC<ManageExperimentProps> = ({ experimentId, onHide }) =
           <p>Experiment name: {experiment.data.name}</p>
         </>
       )}
-      {experiment.error && (
-        <span className="text-red-500">
-          Failed to get experiment info, make sure you have signed in on MLFlow
-        </span>
-      )}
+      {experiment.error && <span className="text-red-500">Failed to get experiment info</span>}
 
       <form
         className="mb-2 flex items-center"
@@ -149,6 +145,7 @@ const ManageExperiment: FC<ManageExperimentProps> = ({ experimentId, onHide }) =
           <Button disabled={updateLabel !== DEFAULT_UPDATE} type="submit">
             {updateLabel}
           </Button>
+          {updateError && <ErrorDisplay error={updateError} />}
         </form>
       )}
 

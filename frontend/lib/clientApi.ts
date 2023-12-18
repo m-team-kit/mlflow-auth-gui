@@ -80,12 +80,16 @@ export const updateUserExperimentPermissions = async (
   });
 
 const HOSTNAME = process.env['MLFLOW_HOSTNAME'] ?? 'http://localhost';
-export const getExperiment = async (experimentId: string) =>
+export const getExperiment = async (token: string, experimentId: string) =>
   fetch(
-    `${HOSTNAME}/api/2.0/mlflow/experiments/get?${new URLSearchParams({
+    //`${HOSTNAME}/api/2.0/mlflow/experiments/get?${new URLSearchParams({
+    `${prefix}/experiment?${new URLSearchParams({
       experiment_id: experimentId,
     })}`,
     {
       method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
   );

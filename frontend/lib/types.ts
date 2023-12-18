@@ -71,9 +71,14 @@ export const Experiment = z.object({
   lifecycle_stage: z.string(),
   last_update_time: z.number(),
   creation_time: z.number(),
-  tags: z.array(Tag),
+  tags: z.array(Tag).optional(),
 });
 export type Experiment = z.infer<typeof Experiment>;
+
+export const MLFlowExperimentResponse = z.object({
+  experiment: Experiment,
+});
+export type MLFlowExperimentResponse = z.infer<typeof MLFlowExperimentResponse>;
 
 const Password = z.string().min(1, 'Password must be at least 1 character long');
 
@@ -104,3 +109,8 @@ export const ExperimentPermissionResponse = z.object({
   experiment_permission: ExperimentPermission,
 });
 export type ExperimentPermissionResponse = z.infer<typeof ExperimentPermissionResponse>;
+
+export const GetExperimentRequest = z.object({
+  experiment_id: z.string(),
+});
+export type GetExperimentRequest = z.infer<typeof GetExperimentRequest>;

@@ -117,3 +117,15 @@ export const mlflowExperimentPermissionUpdate = async (
       permission,
     }),
   });
+
+export const mlflowExperimentGet = async (experimentId: string) =>
+  fetch(
+    `${HOSTNAME}/api/2.0/mlflow/experiments/get?${new URLSearchParams({
+      experiment_id: experimentId,
+    })}`,
+    {
+      headers: {
+        Authorization: localApiAuthorization,
+      },
+    },
+  );
