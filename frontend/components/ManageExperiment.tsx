@@ -11,10 +11,10 @@ import {
   updateUserExperimentPermissions,
 } from '@/lib/clientApi';
 import { useAuth } from 'react-oidc-context';
-import { Experiment, Permission, Permissions } from '@/lib/types';
-import { GetUserExperimentResponse } from '@/app/user/permission/experiment/route';
+import { GetUserExperimentPermissionResponse } from '@/app/user/permission/experiment/route';
 import useTimedState from '@/lib/useTimedState';
 import ErrorDisplay from '@/components/ErrorDisplay';
+import { Experiment, Permission, Permissions } from '@/lib/mlflowTypes';
 
 const DEFAULT_CHECK = 'Check';
 const DEFAULT_UPDATE = 'Update';
@@ -30,7 +30,7 @@ const ManageExperiment: FC<ManageExperimentProps> = ({ experimentId, onHide }) =
 
   const [checkError, setCheckError] = useState<Error | null>(null);
   const [updateError, setUpdateError] = useState<Error | null>(null);
-  const [foundPermission, setFoundPermission] = useState<GetUserExperimentResponse>();
+  const [foundPermission, setFoundPermission] = useState<GetUserExperimentPermissionResponse>();
 
   useEffect(() => {
     dialog.current?.showModal();
@@ -75,7 +75,7 @@ const ManageExperiment: FC<ManageExperimentProps> = ({ experimentId, onHide }) =
 
           checkUserExperimentPermissions(auth.user!.access_token, username, experimentId)
             .then(jsonIfOk)
-            .then((r: GetUserExperimentResponse) => setFoundPermission(r))
+            .then((r: GetUserExperimentPermissionResponse) => setFoundPermission(r))
             .catch((e) => {
               if (e instanceof NetworkError && e.response.status === 404) {
                 setFoundPermission({
@@ -107,46 +107,53 @@ const ManageExperiment: FC<ManageExperimentProps> = ({ experimentId, onHide }) =
       {checkError && <ErrorDisplay error={checkError} />}
 
       {foundPermission != null && (
-        <form
-          className="mb-2 flex items-center"
-          onSubmit={(f) => {
-            f.preventDefault();
-            setUpdateLabel('...');
+        <>
+          <form
+            className="mb-2 flex items-center"
+            onSubmit={(f) => {
+              f.preventDefault();
+              setUpdateLabel('...');
+              setUpdateError(null);
 
-            updateUserExperimentPermissions(
-              auth.user!.access_token,
-              foundPermission?.username,
-              experimentId,
-              f.currentTarget.permission.value,
-            )
-              .then(ifOk)
-              .catch(setUpdateError)
-              .finally(() => resetUpdateLabel());
-          }}
-        >
-          <label htmlFor="permission" className="me-1">
-            Permission
-          </label>
-          <select
-            className="me-1 grow rounded"
-            name="permission"
-            defaultValue={foundPermission.permission}
+              updateUserExperimentPermissions(
+                auth.user!.access_token,
+                foundPermission?.username,
+                experimentId,
+                f.currentTarget.permission.value,
+              )
+                .then(ifOk)
+                .catch(setUpdateError)
+                .then(() => setUpdateLabel('✓'))
+                .catch((e) => {
+                  setUpdateError(e);
+                  setUpdateLabel('✗');
+                });
+            }}
           >
-            {Object.entries(Permissions).map(([key, value]) => (
-              <option
-                key={key}
-                value={value}
-                //disabled={value === Permissions.None}
-              >
-                {key}
-              </option>
-            ))}
-          </select>
-          <Button disabled={updateLabel !== DEFAULT_UPDATE} type="submit">
-            {updateLabel}
-          </Button>
+            <label htmlFor="permission" className="me-1">
+              Permission
+            </label>
+            <select
+              className="me-1 grow rounded"
+              name="permission"
+              defaultValue={foundPermission.permission}
+            >
+              {Object.entries(Permissions).map(([key, value]) => (
+                <option
+                  key={key}
+                  value={value}
+                  //disabled={value === Permissions.None}
+                >
+                  {key}
+                </option>
+              ))}
+            </select>
+            <Button disabled={updateLabel !== DEFAULT_UPDATE} type="submit">
+              {updateLabel}
+            </Button>
+          </form>
           {updateError && <ErrorDisplay error={updateError} />}
-        </form>
+        </>
       )}
 
       <div className="flex justify-end">

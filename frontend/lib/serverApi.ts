@@ -1,4 +1,4 @@
-import { Permission } from '@/lib/types';
+import { Permission } from '@/lib/mlflowTypes';
 
 const localApiAuthorization = `Basic ${Buffer.from(
   process.env['MLFLOW_USERNAME'] + ':' + process.env['MLFLOW_PASSWORD'],
@@ -122,6 +122,67 @@ export const mlflowExperimentGet = async (experimentId: string) =>
   fetch(
     `${HOSTNAME}/api/2.0/mlflow/experiments/get?${new URLSearchParams({
       experiment_id: experimentId,
+    })}`,
+    {
+      headers: {
+        Authorization: localApiAuthorization,
+      },
+    },
+  );
+
+export const mlflowModelPermissionGet = async (username: string, modelName: string) =>
+  fetch(
+    `${HOSTNAME}/api/2.0/mlflow/registered-models/permissions/get?${new URLSearchParams({
+      username: username,
+      name: modelName,
+    })}`,
+    {
+      headers: {
+        Authorization: localApiAuthorization,
+      },
+    },
+  );
+
+export const mlflowModelPermissionCreate = async (
+  username: string,
+  modelName: string,
+  permission: Permission,
+) =>
+  fetch(`${HOSTNAME}/api/2.0/mlflow/registered-models/permissions/create`, {
+    method: 'POST',
+    headers: {
+      Authorization: localApiAuthorization,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: modelName,
+      username,
+      permission,
+    }),
+  });
+
+export const mlflowModelPermissionUpdate = async (
+  username: string,
+  modelName: string,
+  permission: Permission,
+) =>
+  fetch(`${HOSTNAME}/api/2.0/mlflow/registered-models/permissions/update`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: localApiAuthorization,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: modelName,
+      username,
+      permission,
+    }),
+  });
+
+export const mlflowModelGet = async (experimentId: string) =>
+  fetch(
+    `${HOSTNAME}/api/2.0/mlflow/registered-models/get?${new URLSearchParams({
+      name: experimentId,
     })}`,
     {
       headers: {

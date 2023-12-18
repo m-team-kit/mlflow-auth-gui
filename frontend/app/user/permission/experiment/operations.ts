@@ -1,6 +1,7 @@
 import { error, ValueOrError } from '@/lib/helpers';
-import { ExperimentPermission, ExperimentPermissionResponse } from '@/lib/types';
+import { ExperimentPermissionResponse } from '@/lib/apiTypes';
 import { mlflowExperimentPermissionGet } from '@/lib/serverApi';
+import { ExperimentPermission } from '@/lib/mlflowTypes';
 
 export const getExperimentPermission = async (
   username: string,
@@ -10,9 +11,9 @@ export const getExperimentPermission = async (
   if (!permission.ok) {
     if (permission.status === 404) {
       console.log(username, experimentId, permission, await permission.json());
-      return [null, error(404, 'User permission entry not found')];
+      return [null, error(404, 'User experiment permission entry not found')];
     }
-    return [null, error(500, "Couldn't get user permission entry")];
+    return [null, error(500, "Couldn't get user experiment permission entry")];
   }
   const userExperimentPermissionJson = await permission.json();
   const userExperimentPermission = ExperimentPermissionResponse.safeParse(
@@ -20,7 +21,7 @@ export const getExperimentPermission = async (
   );
   if (!userExperimentPermission.success) {
     console.error(
-      'getUserPermissions failed:',
+      'getExperimentPermission failed:',
       userExperimentPermission.error.message,
       userExperimentPermissionJson,
     );

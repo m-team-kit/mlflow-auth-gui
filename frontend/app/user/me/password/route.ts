@@ -1,5 +1,5 @@
 import { mlflowUserUpdatePassword } from '@/lib/serverApi';
-import { UpdatePasswordRequest } from '@/lib/types';
+import { UpdatePasswordRequest } from '@/lib/apiTypes';
 import { error, UserContext, validAuthDecorator } from '@/lib/helpers';
 
 /**

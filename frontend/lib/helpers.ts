@@ -1,9 +1,10 @@
 import { introspect, mlflowUserGet } from '@/lib/serverApi';
-import { MLFlowUserResponse, UserinfoResponse, UserInfoResponse } from '@/lib/types';
+import { UserinfoResponse, UserInfoResponse } from '@/lib/apiTypes';
+import { MLFlowUserResponse } from '@/lib/mlflowTypes';
 
 export class NetworkError extends Error {
   response: Response;
-  json: ErrorResponse;
+  json: ErrorResponse | null;
 
   constructor(response: Response, json: ErrorResponse) {
     super(response.statusText);
@@ -16,7 +17,10 @@ export const jsonIfOk = async (response: Response) => {
   if (response.ok) {
     return response.json();
   } else {
-    throw new NetworkError(response, await response.json());
+    throw new NetworkError(
+      response,
+      response.headers.get('Content-Type') == 'application/json' ? await response.json() : null,
+    );
   }
 };
 
@@ -127,3 +131,7 @@ export const validAuthAndRegisteredDecorator = <
 
 // a poor man's Either
 export type ValueOrError<T, ErrorT = Response> = [T, null] | [null, ErrorT];
+
+export type NullableFields<T> = {
+  [P in keyof T]: T[P] | null;
+};

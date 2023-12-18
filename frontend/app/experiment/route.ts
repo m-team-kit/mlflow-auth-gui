@@ -1,4 +1,4 @@
-import { Experiment, GetExperimentRequest, Permissions } from '@/lib/types';
+import { GetExperimentRequest } from '@/lib/apiTypes';
 import { NextRequest } from 'next/server';
 import {
   error,
@@ -7,8 +7,9 @@ import {
   validAuthAndRegisteredDecorator,
 } from '@/lib/helpers';
 import { getExperimentFromMlflow } from './operations';
+import { Experiment, Permissions } from '@/lib/mlflowTypes';
 
-export type GetUserExperimentResponse = Experiment;
+export type GetExperimentResponse = Experiment;
 /**
  * Get experiment
  *
@@ -40,6 +41,6 @@ const getExperiment = async (request: NextRequest, context: UserContext & MLFlow
     return err;
   }
 
-  return Response.json(experiment satisfies GetUserExperimentResponse);
+  return Response.json(experiment satisfies GetExperimentResponse);
 };
 export const GET = validAuthAndRegisteredDecorator(getExperiment);

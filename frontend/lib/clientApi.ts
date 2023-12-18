@@ -1,9 +1,11 @@
 import config from '../next.config';
 import {
   GetExperimentPermissionRequest,
+  GetModelPermissionRequest,
   UpdateExperimentPermissionRequest,
-  Permission,
-} from '@/lib/types';
+  UpdateModelPermissionRequest,
+} from '@/lib/apiTypes';
+import { Permission } from '@/lib/mlflowTypes';
 const prefix = config.basePath ?? '';
 
 export const getUser = async (token: string) =>
@@ -85,6 +87,55 @@ export const getExperiment = async (token: string, experimentId: string) =>
     //`${HOSTNAME}/api/2.0/mlflow/experiments/get?${new URLSearchParams({
     `${prefix}/experiment?${new URLSearchParams({
       experiment_id: experimentId,
+    })}`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+export const checkUserModelPermissions = async (
+  token: string,
+  username: string,
+  modelName: string,
+) =>
+  fetch(
+    `${prefix}/user/permission/model?${new URLSearchParams({
+      username,
+      model_name: modelName,
+    } satisfies GetModelPermissionRequest)}`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+export const updateUserModelPermissions = async (
+  token: string,
+  username: string,
+  modelName: string,
+  permission: Permission,
+) =>
+  fetch(`${prefix}/user/permission/model`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      username,
+      model_name: modelName,
+      permission,
+    } satisfies UpdateModelPermissionRequest),
+  });
+
+export const getModel = async (token: string, modelName: string) =>
+  fetch(
+    `${prefix}/registeredModel?${new URLSearchParams({
+      model_name: modelName,
     })}`,
     {
       method: 'GET',

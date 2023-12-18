@@ -1,6 +1,6 @@
 import { error, ValueOrError } from '@/lib/helpers';
-import { Experiment, MLFlowExperimentResponse } from '@/lib/types';
 import { mlflowExperimentGet } from '@/lib/serverApi';
+import { Experiment, MLFlowExperimentResponse } from '@/lib/mlflowTypes';
 
 export const getExperimentFromMlflow = async (
   experimentId: string,
@@ -15,7 +15,7 @@ export const getExperimentFromMlflow = async (
   const experimentJson = await experimentResponse.json();
   const experiment = MLFlowExperimentResponse.safeParse(experimentJson);
   if (!experiment.success) {
-    console.error('getExperiment failed:', experiment.error.message, experimentJson);
+    console.error('getExperimentFromMlflow failed:', experiment.error.message, experimentJson);
     return [null, error(500, `Invalid response from MLFlow ${experiment.error.message}`)];
   }
 

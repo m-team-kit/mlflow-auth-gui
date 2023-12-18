@@ -3,13 +3,7 @@ import {
   mlflowExperimentPermissionGet,
   mlflowExperimentPermissionUpdate,
 } from '@/lib/serverApi';
-import {
-  ExperimentPermission,
-  type Permission,
-  Permissions,
-  GetExperimentPermissionRequest,
-  UpdateExperimentPermissionRequest,
-} from '@/lib/types';
+import { GetExperimentPermissionRequest, UpdateExperimentPermissionRequest } from '@/lib/apiTypes';
 import {
   error,
   MLFlowUserContext,
@@ -18,8 +12,9 @@ import {
 } from '@/lib/helpers';
 import { NextRequest } from 'next/server.js';
 import { getExperimentPermission } from '@/app/user/permission/experiment/operations';
+import { ExperimentPermission, Permission, Permissions } from '@/lib/mlflowTypes';
 
-export type GetUserExperimentResponse = {
+export type GetUserExperimentPermissionResponse = {
   username: string;
   experiment_id: string;
   permission: Permission;
@@ -64,7 +59,7 @@ const getUserPermissions = async (
     username: body.data.username,
     experiment_id: body.data.experiment_id,
     permission: permission.permission,
-  } satisfies GetUserExperimentResponse);
+  } satisfies GetUserExperimentPermissionResponse);
 };
 export const GET = validAuthAndRegisteredDecorator(getUserPermissions);
 
@@ -74,7 +69,7 @@ export const GET = validAuthAndRegisteredDecorator(getUserPermissions);
  * @param request
  * @param context
  */
-const updateUserPermissions = async (
+const updateUserExperimentPermission = async (
   request: NextRequest,
   context: UserContext & MLFlowUserContext,
 ) => {
@@ -107,11 +102,11 @@ const updateUserPermissions = async (
     body.data.permission,
   );
   if (!mlflowUpdateR.ok) {
-    console.error('updateUserPermissions failed:', await mlflowUpdateR.text());
-    return error(500, "Couldn't update user permissions in mlflow");
+    console.error('updateUserExperimentPermission failed:', await mlflowUpdateR.text());
+    return error(500, "Couldn't update user experiment permission in mlflow");
   }
 
   // TODO: use 204 once next fixes their shit
   return new Response(undefined, { status: 200 });
 };
-export const PUT = validAuthAndRegisteredDecorator(updateUserPermissions);
+export const PUT = validAuthAndRegisteredDecorator(updateUserExperimentPermission);

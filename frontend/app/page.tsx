@@ -12,7 +12,8 @@ import ErrorDisplay from '@/components/ErrorDisplay';
 import { privacyPolicyUrl, termsOfUseUrl } from '@/app/links';
 import ManageModel from '@/components/ManageModel';
 import ManageExperiment from '@/components/ManageExperiment';
-import { Permissions } from '@/lib/types';
+
+import { Permissions } from '@/lib/mlflowTypes';
 
 const NotSignedIn: FC = () => {
   const auth = useAuth();
@@ -77,7 +78,7 @@ const LoggedIn: FC = () => {
       <div>Registered: {data.mlflow != null ? 'Yes' : 'No'}</div>
       {data.mlflow && <div>Admin: {data.mlflow.user.is_admin ? 'Yes' : 'No'}</div>}
 
-      {manageModel && <ManageModel modelName={manageModel} />}
+      {manageModel && <ManageModel modelName={manageModel} onHide={() => setManageModel(null)} />}
       {manageExperiment && (
         <ManageExperiment
           experimentId={manageExperiment}
@@ -220,9 +221,7 @@ const LoggedIn: FC = () => {
                     </td>
                     <td>
                       {permission.permission === Permissions.Manage ? (
-                        <Button onClick={() => setManageModel(permission.name)} disabled>
-                          Manage
-                        </Button>
+                        <Button onClick={() => setManageModel(permission.name)}>Manage</Button>
                       ) : (
                         permission.permission
                       )}

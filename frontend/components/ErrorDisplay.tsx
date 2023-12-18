@@ -12,7 +12,10 @@ const ErrorDisplayError: FC<ErrorDisplayErrorProps> = ({ error }) => {
           <span>{error.response.status}</span> <small>{error.response.statusText}</small>
         </div>
         <div>Cause: {error.response.url}</div>
-        <div>Message: {error.json.message}</div>
+        {error.json && (
+          <div className="text-amber-500">Message: {error.json?.message ?? 'No response'}</div>
+        )}
+        {error.json == null && <div className="text-amber-500">No (json) response given</div>}
       </div>
     );
   }

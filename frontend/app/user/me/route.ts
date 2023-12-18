@@ -1,6 +1,7 @@
 import { mlflowUserCreate, mlflowUserDelete, mlflowUserGet } from '@/lib/serverApi';
-import { CreateUserRequest, MLFlowUserResponse, UserinfoResponse } from '@/lib/types';
+import { CreateUserRequest, UserinfoResponse } from '@/lib/apiTypes';
 import { error, UserContext, validAuthDecorator } from '@/lib/helpers';
+import { MLFlowUserResponse } from '@/lib/mlflowTypes';
 
 export type GetMeResponse = {
   oidc: UserinfoResponse;
