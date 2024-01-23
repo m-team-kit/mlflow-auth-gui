@@ -70,16 +70,16 @@ export const ModelVersion = z.object({
   version: z.string(),
   creation_timestamp: z.number(),
   last_updated_timestamp: z.number(),
-  user_id: z.number(),
+  user_id: z.number().optional(),
   current_stage: z.string(),
   description: z.string(),
   source: z.string(),
   run_id: z.string(),
   status: ModelVersionStatus,
-  status_message: z.string(),
-  tags: z.array(ModelVersionTag),
+  status_message: z.string().optional(),
+  tags: z.array(ModelVersionTag).optional(),
   run_link: z.string(),
-  aliases: z.array(z.string()),
+  aliases: z.array(z.string()).optional(),
 });
 export type ModelVersion = z.infer<typeof ModelVersion>;
 

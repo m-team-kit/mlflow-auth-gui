@@ -15,7 +15,11 @@ export const getExperimentFromMlflow = async (
   const experimentJson = await experimentResponse.json();
   const experiment = MLFlowExperimentResponse.safeParse(experimentJson);
   if (!experiment.success) {
-    console.error('getExperimentFromMlflow failed:', experiment.error.message, experimentJson);
+    console.error(
+      'getExperimentFromMlflow failed:',
+      experiment.error.message,
+      JSON.stringify(experimentJson),
+    );
     return [null, error(500, `Invalid response from MLFlow ${experiment.error.message}`)];
   }
 

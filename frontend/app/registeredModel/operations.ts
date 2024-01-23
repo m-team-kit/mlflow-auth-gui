@@ -15,7 +15,7 @@ export const getModelFromMlflow = async (
   const modelJson = await modelResponse.json();
   const model = MLFlowModelResponse.safeParse(modelJson);
   if (!model.success) {
-    console.error('getModelFromMlflow failed:', model.error.message, modelJson);
+    console.error('getModelFromMlflow failed:', model.error.message, JSON.stringify(modelJson));
     return [null, error(500, `Invalid response from MLFlow ${model.error.message}`)];
   }
 
