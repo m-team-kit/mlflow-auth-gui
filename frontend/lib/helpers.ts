@@ -47,9 +47,9 @@ export const error = (status: number, message: string) =>
   );
 type Context<T> = T extends Record<string, any> ? T : never;
 
-const requiredEntitlement =
-  process.env['REQUIRED_ENTITLEMENT'] ??
-  'urn:mace:egi.eu:group:vo.ai4eosc.eu:role=member#aai.egi.eu';
+const requiredEntitlement = process.env['REQUIRED_ENTITLEMENT']?.split(',') ?? [
+  'urn:mace:egi.eu:group:vo.ai4eosc.eu:role=member#aai.egi.eu',
+];
 
 export type UserContext = {
   user: UserinfoResponse;
@@ -82,7 +82,9 @@ export const validAuthDecorator = <
 
     if (
       userInfo.eduperson_entitlement == null ||
-      !userInfo.eduperson_entitlement.includes(requiredEntitlement)
+      !requiredEntitlement.some(
+        (entitlement) => userInfo.eduperson_entitlement?.includes(entitlement) ?? false,
+      )
     ) {
       return error(
         403,
