@@ -44,8 +44,8 @@ services:
       context: ./frontend
       target: production
       args:
-        OIDC_AUTHORITY: https://aai-demo.egi.eu/auth/realms/egi
-        OIDC_CLIENT_ID: mlflow-oidc-ai4eosc
+        OIDC_AUTHORITY: ${OIDC_AUTHORITY}
+        OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
         OIDC_REDIRECT_URI: https://${DOMAIN}/signup
         PRIVACY_POLICY_URL: ${PRIVACY_POLICY_URL}
         TERMS_OF_USE_URL: ${TERMS_OF_USE_URL}
