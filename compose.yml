@@ -32,7 +32,7 @@ services:
     expose:
       - 5000
     labels:
-      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && !PathPrefix(`/signup`) && !PathPrefix(`/api/2.0/mlflow/users/create`)"
+      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && !PathPrefix(`/signup`)"
       - "traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=12884901888"
       - "traefik.http.middlewares.limit.buffering.memRequestBodyBytes=10485760"
       - "traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=12884901888"
@@ -60,7 +60,7 @@ services:
   database:
     image: postgres:latest
     restart: always
-    user: postgres
+    #user: postgres
     # non-root user inside container!
     # (host) volume has to belong to "docker" uid:gid (e.g. lxd:docker)
     volumes:

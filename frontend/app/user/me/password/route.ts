@@ -1,5 +1,5 @@
-import { introspect, mlflowUserUpdatePassword } from '@/lib/serverApi';
-import { UpdatePasswordRequest, UserinfoResponse } from '@/lib/types';
+import { mlflowUserUpdatePassword } from '@/lib/serverApi';
+import { UpdatePasswordRequest } from '@/lib/apiTypes';
 import { error, UserContext, validAuthDecorator } from '@/lib/helpers';
 
 /**
@@ -8,7 +8,7 @@ import { error, UserContext, validAuthDecorator } from '@/lib/helpers';
  * @param request
  * @param context
  */
-const updatePassword = async (request: Request, context: UserContext) => {
+const updateMyPassword = async (request: Request, context: UserContext) => {
   const body = UpdatePasswordRequest.safeParse(await request.json());
   if (!body.success) {
     return error(422, `Validation failed: ${body.error.message}`);
@@ -27,4 +27,4 @@ const updatePassword = async (request: Request, context: UserContext) => {
   // TODO: use 204 once next fixes their shit
   return new Response(undefined, { status: 200 });
 };
-export const PATCH = validAuthDecorator(updatePassword);
+export const PATCH = validAuthDecorator(updateMyPassword);

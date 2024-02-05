@@ -5,11 +5,15 @@ import { useAuth } from 'react-oidc-context';
 import AuthContext from '@/components/AuthContext';
 import useSWR from 'swr';
 import Button from '@/components/Button';
-import { GetUserResponse } from '@/app/user/route';
+import { GetMeResponse } from '@/app/user/me/route';
 import { deleteUser, getUser, register, updatePassword } from '@/lib/clientApi';
 import { ifOk, jsonIfOk } from '@/lib/helpers';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import { privacyPolicyUrl, termsOfUseUrl } from '@/app/links';
+import ManageModel from '@/components/ManageModel';
+import ManageExperiment from '@/components/ManageExperiment';
+
+import { Permissions } from '@/lib/mlflowTypes';
 
 const NotSignedIn: FC = () => {
   const auth = useAuth();
@@ -27,7 +31,7 @@ const NotSignedIn: FC = () => {
 const LoggedIn: FC = () => {
   const auth = useAuth();
 
-  const swr = useSWR<GetUserResponse>('/user', async () =>
+  const swr = useSWR<GetMeResponse>('/user', async () =>
     jsonIfOk(await getUser(auth.user?.access_token!)),
   );
 
@@ -39,6 +43,9 @@ const LoggedIn: FC = () => {
   );
 
   const { data } = swr;
+
+  const [manageModel, setManageModel] = useState<string | null>(null);
+  const [manageExperiment, setManageExperiment] = useState<string | null>(null);
 
   if (error != null) {
     return <ErrorDisplay message="An error occurred" error={error} />;
@@ -63,8 +70,21 @@ const LoggedIn: FC = () => {
   return (
     <>
       <h1>MLFlow {data.mlflow ? 'User Settings' : 'Registration'}</h1>
+      {data.mlflow && <div>UserID: {data.mlflow.user.id}</div>}
       <div>Email: {data.oidc.email}</div>
+      {data.mlflow && data.mlflow.user.username !== data.oidc.email && (
+        <div>MLFlow username: {data.mlflow.user.username}</div>
+      )}
       <div>Registered: {data.mlflow != null ? 'Yes' : 'No'}</div>
+      {data.mlflow && <div>Admin: {data.mlflow.user.is_admin ? 'Yes' : 'No'}</div>}
+
+      {manageModel && <ManageModel modelName={manageModel} onHide={() => setManageModel(null)} />}
+      {manageExperiment && (
+        <ManageExperiment
+          experimentId={manageExperiment}
+          onHide={() => setManageExperiment(null)}
+        />
+      )}
 
       <form
         onSubmit={(e) => {
@@ -125,7 +145,7 @@ const LoggedIn: FC = () => {
         <div className="flex justify-end">
           <Button
             type="submit"
-            className={'mt-2'}
+            className="mt-2"
             disabled={
               password.length == 0 ||
               (data.mlflow == null && (termsOfUseUrl || privacyPolicyUrl ? !acceptedTerms : false))
@@ -136,10 +156,84 @@ const LoggedIn: FC = () => {
         </div>
       </form>
       {data.mlflow && (
-        <div className="my-2 block border">
-          <pre>{JSON.stringify(data.mlflow, null, 2)}</pre>
-        </div>
+        <>
+          <h3>Experiment permissions</h3>
+          {data.mlflow.user.experiment_permissions.length == 0 ? (
+            <div className="text-center">No experiment permissions</div>
+          ) : (
+            <table className="mb-0">
+              <thead>
+                <tr>
+                  <th>Experiment ID</th>
+                  <th>User ID</th>
+                  <th>Permission</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.mlflow.user.experiment_permissions.map((permission) => (
+                  <tr key={permission.experiment_id}>
+                    <td>{permission.experiment_id}</td>
+                    <td>
+                      {permission.user_id}
+                      {permission.user_id === data.mlflow?.user.id && (
+                        <span className="text-orange-700 dark:text-orange-300"> (You)</span>
+                      )}
+                    </td>
+                    <td>
+                      {permission.permission === Permissions.Manage ? (
+                        <Button onClick={() => setManageExperiment(permission.experiment_id)}>
+                          Manage
+                        </Button>
+                      ) : (
+                        permission.permission
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </>
       )}
+      {data.mlflow && (
+        <>
+          <h3>Registered model permissions</h3>
+          {data.mlflow.user.registered_model_permissions.length == 0 ? (
+            <div className="text-center">No registered model permissions</div>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Model name</th>
+                  <th>User ID</th>
+                  <th>Permission</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.mlflow.user.registered_model_permissions.map((permission) => (
+                  <tr key={permission.name}>
+                    <td>{permission.name}</td>
+                    <td>
+                      {permission.user_id}
+                      {permission.user_id === data.mlflow?.user.id && (
+                        <span className="text-orange-700 dark:text-orange-300"> (You)</span>
+                      )}
+                    </td>
+                    <td>
+                      {permission.permission === Permissions.Manage ? (
+                        <Button onClick={() => setManageModel(permission.name)}>Manage</Button>
+                      ) : (
+                        permission.permission
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </>
+      )}
+      {data.mlflow && <div className="mb-8" />}
       <div className="flex justify-center gap-2">
         {data.mlflow != null && (
           <Button
