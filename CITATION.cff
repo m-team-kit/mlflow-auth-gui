@@ -1,0 +1,52 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: MLflow Auth GUI
+message: >-
+  A web application that provides a Web GUI to the MLflow
+  Authentication API
+type: software
+authors:
+  - given-names: Christophe
+    family-names: Laures
+    affiliation: KIT
+  - given-names: Borja
+    family-names: Esteban Sanchis
+    affiliation: KIT
+  - given-names: Lisana
+    family-names: Berberi
+    affiliation: KIT
+  - given-names: Valentin
+    family-names: Kozlov
+    affiliation: KIT
+repository-code: 'https://codebase.helmholtz.cloud/m-team/ai/mlflow-auth-gui'
+abstract: >-
+  This web application provides a Web GUI to the MLflow
+  Authentication API
+
+
+  GUI provides:
+
+  * self-registration of users in MLflow
+
+  * self-registration service requires Authentication via a
+  pre-configured OIDC Provider (e.g. EGI Check-In)
+
+  * one can limit users eligible for self-registration using
+  REQUIRED_ENTITLEMENT
+
+  * created in the MLflow user name is the email address
+  retrieved from the OIDC token (registered email)
+
+  * after the user is registered in MLflow, he/she can:
+     * update his/her MLflow password
+     * update permissions to his/her experiments
+     * update permissions to his/her registered models
+     * delete account
+keywords:
+  - mlflow
+  - experiment tracking
+  - web service
+license: Apache-2.0
+date-released: '2024-02-22'

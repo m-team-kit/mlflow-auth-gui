@@ -1,0 +1,58 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/Apache-2.0",
+    "codeRepository": "https://codebase.helmholtz.cloud/m-team/ai/mlflow-auth-gui",
+    "issueTracker": "https://github.com/m-team-kit/mlflow-auth-gui/issues",
+    "name": "MLflow Auth GUI",
+    "description": "A Web application that provides a Web GUI to the MLflow Authentication API",
+    "applicationCategory": "Machine learning",
+    "keywords": [
+        "mlflow",
+        "experiment tracking",
+        "web service"
+    ],
+    "programmingLanguage": [
+        "javascript",
+        "bash",
+        "dockerfile"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "Christophe",
+            "familyName": "Laures",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "KIT"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Borja",
+            "familyName": "Esteban Sanchis",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "KIT"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Lisana",
+            "familyName": "Berberi",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "KIT"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Valentin",
+            "familyName": "Kozlov",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "KIT"
+            }
+        }
+    ]
+}
