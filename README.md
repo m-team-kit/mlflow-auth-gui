@@ -1,5 +1,5 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-1.4-4baaaa.svg)](CODE_OF_CONDUCT.md)
-# MLFlow AUTH GUI
+# MLflow Auth GUI
 
 This web application provides a Web GUI to the [MLflow Authentication API](https://mlflow.org/docs/latest/auth/rest-api.html).
 
