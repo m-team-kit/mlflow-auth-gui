@@ -24,6 +24,9 @@
         "bash",
         "dockerfile"
     ],
+    "relatedLink": [
+        "https://mlflow.cloud.ai4eosc.eu/"
+    ],
     "author": [
         {
             "@type": "Person",
