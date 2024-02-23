@@ -10,6 +10,10 @@
     "identifier": "https://codebase.helmholtz.cloud/m-team/ai/mlflow-auth-gui",
     "version": "0.6.1",
     "releaseNotes": "Added:\n - Code metadata, \n - Contributing Changed: \n- README \n- Move OIDC_AUTHORITY and AUTH_USERINFO_ENDPOINT to .env from compose.yml",
+    "citation": {
+        "type": "CITATION.cff",
+        "path": "./CITATION.cff"
+    },
     "keywords": [
         "mlflow",
         "experiment tracking",
