@@ -7,6 +7,8 @@
     "name": "MLflow Auth GUI",
     "description": "A Web application that provides a Web GUI to the MLflow Authentication API",
     "applicationCategory": "Machine learning",
+    "version": "0.6.1",
+    "releaseNotes": "Added:\n - Code metadata, \n - Contributing Changed: \n- README \n- Move OIDC_AUTHORITY and AUTH_USERINFO_ENDPOINT to .env from compose.yml",
     "keywords": [
         "mlflow",
         "experiment tracking",
