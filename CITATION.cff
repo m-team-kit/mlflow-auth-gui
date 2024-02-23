@@ -54,3 +54,6 @@ keywords:
   - experiment tracking
   - web service
 license: Apache-2.0
+contact:
+  - affiliation: Karlsruhe Institute of Technology (KIT)
+    email: m-contact@lists.kit.edu
