@@ -3,7 +3,9 @@
 
 cff-version: 1.2.0
 title: MLflow Auth GUI
-doi: 10.5281/zenodo.10689853
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.10689853
 version: 0.6.1
 date-released: '2024-01-24'
 message: >-
