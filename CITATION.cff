@@ -3,7 +3,9 @@
 
 cff-version: 1.2.0
 title: MLflow Auth GUI
-url: 10.5281/zenodo.10689853
+doi: 10.5281/zenodo.10689853
+version: 0.6.1
+date-released: '2024-01-24'
 message: >-
   A web application that provides a Web GUI to the MLflow
   Authentication API
@@ -50,6 +52,3 @@ keywords:
   - experiment tracking
   - web service
 license: Apache-2.0
-contact-email:
-  - affiliation: "Karlsruhe Institute of Technology (KIT)"
-    email: m-contact@lists.kit.edu
