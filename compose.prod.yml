@@ -42,7 +42,8 @@ services:
     image: mteamkit/goaccess-service
     volumes:
       - ${MLFLOW_BASE_PATH_LOCAL}/traefik/log/:/var/log/srv-access/
-      - ${GOACCESS_LOCAL}:/opt/goaccess/
+      - ${GOACCESS_ETC_PATH_LOCAL}:/opt/goaccess-etc/
+      - ${GOACCESS_OUT_PATH_LOCAL}:/opt/goaccess-out/
     env_file: .env
     networks:
       - backend
