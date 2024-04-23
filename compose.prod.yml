@@ -36,3 +36,20 @@ services:
     labels:
       traefik.http.routers.frontend.tls: true
       traefik.http.routers.frontend.tls.certResolver: letsEncrypt
+
+  goaccess:
+    restart: always
+    image: mteamkit/goaccess-service
+    volumes:
+      - ${MLFLOW_BASE_PATH_LOCAL}/traefik/log/:/var/log/srv-access/
+      - ${GOACCESS_ETC_PATH_LOCAL}:/opt/goaccess-etc/
+      - ${GOACCESS_OUT_PATH_LOCAL}:/opt/goaccess-out/
+    env_file: .env
+    networks:
+      - backend
+    labels:
+      traefik.http.routers.goaccess.rule: Host(`${DOMAIN}`) && PathPrefix(`/${GOACCESS_WEB_ROUTE}`)
+      traefik.http.routers.goaccess.tls: true
+      traefik.http.routers.goaccess.tls.certResolver: letsEncrypt
+      traefik.http.routers.goaccess.middlewares: auth
+      traefik.http.middlewares.auth.basicauth.users: ${GOACCESS_USER}:${GOACCESS_PASSWORD}
