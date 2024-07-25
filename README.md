@@ -29,12 +29,20 @@ docker compose configuration is based on [awesome-compose](https://github.com/do
 
 ### Configuration
 
-Customize deployment with an `.env` file from `.env.sample`.
+Copy `.env.sample` to `.env` and customize the values for your deployment.
+
+Ensure `MLFLOW_USERNAME` & `MLFLOW_PASSWORD` in .env and `admin_username` & `admin_password` in backend/srv/auth_config.ini match.
+
+If setting up on windows, launch the compose once to create volumes & files, then uncomment `user: postgres` in compose.yml.
 
 ### Deploy for development
 
-Use `docker compose up -d`, docker compose overrides automatically using
-`compose.override.yml` file.
+1. Use `docker compose up -d`, docker compose overrides automatically using
+   `compose.override.yml` file.
+2. In `frontend`:
+    1. Install dependencies: `yarn install`
+    2. Verify the env in .env, override it in .env.local if necessary
+    3. Run `yarn dev` to start the development server
 
 ### Deploy in Production
 

@@ -4,3 +4,5 @@ basic_auth.db
 
 /traefik/
 /.idea/
+
+/app-data/
