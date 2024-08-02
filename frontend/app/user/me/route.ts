@@ -1,4 +1,10 @@
-import { mlflowUserCreate, mlflowUserDelete, mlflowUserGet } from '@/lib/serverApi';
+import {
+  mlflowUserCreate,
+  mlflowUserDelete,
+  mlflowUserGet,
+  SECRETS_VO,
+  updateSecret,
+} from '@/lib/serverApi';
 import { CreateUserRequest, UserinfoResponse } from '@/lib/apiTypes';
 import { error, UserContext, validAuthDecorator } from '@/lib/helpers';
 import { MLFlowUserResponse } from '@/lib/mlflowTypes';
@@ -54,21 +60,31 @@ const createMe = async (request: Request, context: UserContext) => {
     return error(422, `Validation failed: ${body.error.message}`);
   }
 
-  const mlflowCreateR = await mlflowUserCreate(context.user.email, body.data.password);
-  if (!mlflowCreateR.ok) {
-    console.error('createMe failed:', await mlflowCreateR.text());
+  const createResponse = await mlflowUserCreate(context.user.email, body.data.password);
+  if (!createResponse.ok) {
+    console.error('createMe failed:', await createResponse.text());
     return error(500, "Couldn't create user in mlflow");
   }
 
-  const mlflowCreateJson = await mlflowCreateR.json();
-  const mlflowCreateValidation = MLFlowUserResponse.safeParse(mlflowCreateJson);
-  if (!mlflowCreateValidation.success) {
-    console.error('createMe failed:', mlflowCreateValidation.error.message, mlflowCreateJson);
-    return error(500, `Invalid response from MLFlow: ${mlflowCreateValidation.error.message}`);
+  const createResponseBody = await createResponse.json();
+  const validation = MLFlowUserResponse.safeParse(createResponseBody);
+  if (!validation.success) {
+    console.error('createMe failed:', validation.error.message, createResponseBody);
+    return error(500, `Invalid response from MLFlow: ${validation.error.message}`);
+  }
+
+  if (SECRETS_VO.length > 0) {
+    const secretResponse = await updateSecret(context.user.email, body.data.password);
+    if (!secretResponse.ok) {
+      // TODO: delete mlflow user? retry? mlflow and secret should ideally be synchronized, but this control panel is the authority
+      //       and allows just changing the password if it goes wrong
+      console.warn('createMe waning: could not update secret:', await secretResponse.text());
+      return error(500, 'Could not update secret');
+    }
   }
 
   return Response.json({
-    user: mlflowCreateValidation.data,
+    user: validation.data,
   } satisfies CreateMeResponse);
 };
 export const POST = validAuthDecorator(createMe);

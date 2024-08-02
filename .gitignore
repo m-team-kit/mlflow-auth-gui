@@ -6,3 +6,6 @@ basic_auth.db
 /.idea/
 
 /app-data/
+/goaccess-etc
+/goaccess-out
+/backup_db
