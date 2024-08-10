@@ -11,29 +11,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends && \
     rm -rf /etc/cron.*/* && \
     # Clean up & back to dialog front end
     apt-get autoremove -y && \
-    apt-get install -y sqlite3 && \
-    apt-get install -y postgresql-client && \
+    apt-get install -y sqlite3 postgresql-client python3.11 python3.11-pip python3-psycopg2  && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=dialog
+
+ARG MLFLOW_VERSION=2.14.3
+RUN pip install mlflow
 
 # Create folder to store backup files
 RUN mkdir -p /backup_files
 
 # Set the working directory to /srv
 WORKDIR /srv
-COPY scripts/start-cron.sh start-cron.sh
-COPY scripts/backup_script.sh backup_script.sh
-COPY scripts/backup_script_sqlite.sh backup_script_sqlite.sh
-COPY scripts/restore_manually.sh restore_manually.sh
-COPY scripts/restore_manually_sqlite.sh restore_manually_sqlite.sh
 
-# Make the scripts executable
-RUN chmod +x start-cron.sh \
-    backup_script.sh \
-    backup_script_sqlite.sh \
-    restore_manually.sh \
-    restore_manually_sqlite.sh
+ADD --chmod 755 scripts/*.sh /app/
 
 # Create folder to restore files
 RUN mkdir -p /restore_files

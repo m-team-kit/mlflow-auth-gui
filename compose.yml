@@ -16,7 +16,10 @@ services:
 
   backend:
     restart: always
-    build: ./backend
+    build:
+      context: ./backend
+      args:
+        MLFLOW_VERSION: ${MLFLOW_VERSION}
     depends_on:
       - database
     networks:
@@ -79,7 +82,10 @@ services:
 
   backup_db:
     restart: always
-    build: ./backup_db
+    build:
+      context: ./backup_db
+      args:
+        - MLFLOW_VERSION: ${MLFLOW_VERSION}
     init: true
     depends_on:
       - database
