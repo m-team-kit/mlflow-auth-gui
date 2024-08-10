@@ -17,6 +17,8 @@ export MLFLOW_TRACKING_USERNAME="$MLFLOW_USERNAME"
 export MLFLOW_TRACKING_USERNAME="$MLFLOW_USERNAME"
 export MLFLOW_TRACKING_URI="$MLFLOW_HOSTNAME"
 
+. venv/bin/activate
+
 mlflow gc --backend-store-uri "${PSQL_CONNECTION_STRING}" --older-than 30d 2>&1 | tee -a $BACKUP_DIR/mlflow_gc.log
 
 if [ $? -eq 0 ]; then

@@ -7,17 +7,16 @@ FROM postgres:${POSTGRES_VERSION} as backup
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends && \
     # Install cron tools
-    apt-get install -y cron && which cron && \
+    apt-get install -y cron sqlite3 postgresql-client python3 python3-pip python3-psycopg2 python3-venv && which cron && \
     rm -rf /etc/cron.*/* && \
     # Clean up & back to dialog front end
     apt-get autoremove -y && \
-    apt-get install -y sqlite3 postgresql-client python3.11 python3.11-pip python3-psycopg2  && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=dialog
 
 ARG MLFLOW_VERSION=2.14.3
-RUN pip install mlflow
+RUN python3 -m venv venv && . venv/bin/activate && pip install mlflow
 
 # Create folder to store backup files
 RUN mkdir -p /backup_files
@@ -25,7 +24,7 @@ RUN mkdir -p /backup_files
 # Set the working directory to /srv
 WORKDIR /srv
 
-ADD --chmod 755 scripts/*.sh /app/
+ADD --chmod=755 scripts/*.sh /app/
 
 # Create folder to restore files
 RUN mkdir -p /restore_files
