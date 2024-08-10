@@ -13,6 +13,10 @@ DB_PORT="${DATABASE_PORT:?DATABASE_PORT environment variable  is not set}"
 # Construct the psql connection string
 PSQL_CONNECTION_STRING="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
 
+export MLFLOW_TRACKING_USERNAME="$MLFLOW_USERNAME"
+export MLFLOW_TRACKING_USERNAME="$MLFLOW_USERNAME"
+export MLFLOW_TRACKING_URI="$MLFLOW_HOSTNAME"
+
 mlflow gc --backend-store-uri "${PSQL_CONNECTION_STRING}" --older-than 30d 2>&1 | tee -a $BACKUP_DIR/mlflow_gc.log
 
 if [ $? -eq 0 ]; then
