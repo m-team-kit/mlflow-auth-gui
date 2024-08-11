@@ -51,15 +51,14 @@ const requiredEntitlement = process.env['REQUIRED_ENTITLEMENT']?.split(',') ?? [
   'urn:mace:egi.eu:group:vo.ai4eosc.eu:role=member#aai.egi.eu',
 ];
 
+type Handler<Req extends Request = Request, T = object> = (request: Req, context: T & object) => Promise<Response>;
+
 export type UserContext = {
   user: UserinfoResponse;
 };
-export const validAuthDecorator = <
-  ExtraContext extends Exclude<Record<string, any>, UserContext>,
-  Req extends Request,
->(
-  target: (request: Req, context: Context<ExtraContext> & UserContext) => Promise<Response>,
-): ((request: Req, context: Context<ExtraContext>) => Promise<Response>) =>
+export const validAuthDecorator =
+    <Req extends Request>
+    (target: Handler<Req, UserContext>): Handler<Req> =>
   async function wrapped(request, context?) {
     const token = request.headers.get('Authorization');
     if (token == null || !token.startsWith('Bearer')) {
@@ -92,22 +91,18 @@ export const validAuthDecorator = <
       );
     }
 
-    return target(request, { ...context, user: userInfo });
+    return target(request, { ...context, user: userInfo } as unknown & UserContext);
   };
 
 export type MLFlowUserContext = {
   mlflowUser: MLFlowUserResponse['user'];
 };
 export const validAuthAndRegisteredDecorator = <
-  ExtraContext extends Exclude<Record<string, any>, UserContext>,
   Req extends Request,
 >(
-  target: (
-    request: Req,
-    context: Context<ExtraContext> & UserContext & MLFlowUserContext,
-  ) => Promise<Response>,
-): ((request: Req, context: Context<ExtraContext>) => Promise<Response>) =>
-  validAuthDecorator(async function wrapped(request, context?) {
+  target: Handler<Req, UserContext & MLFlowUserContext>,
+): Handler<Req> =>
+  validAuthDecorator(async function wrapped(request, context) {
     const mlflowUserR = await mlflowUserGet(context.user.email);
     if (mlflowUserR.status === 404) {
       return error(403, 'Not registered');
