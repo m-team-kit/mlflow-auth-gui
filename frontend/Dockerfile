@@ -1,19 +1,17 @@
 FROM node:20-alpine as base
 
-ENV YARN_VERSION 4.0.1
-RUN yarn policies set-version $YARN_VERSION
-
 WORKDIR /app
-COPY [".yarn/releases", ".yarn/releases"]
-COPY [".env", ".eslintrc.json", ".prettierrc", ".yarnrc.yml", "next.config.js", "next-env.d.ts", "package.json", "postcss.config.js", "tailwind.config.ts", "tsconfig.json", "yarn.lock", "./"]
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+COPY [".env", ".eslintrc.json", ".prettierrc", "next.config.js", "next-env.d.ts", "package.json", "postcss.config.js", "tailwind.config.ts", "tsconfig.json", "pnpm-lock.yaml", "./"]
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN yarn install --immutable
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY app app
 COPY components components
 COPY lib lib
-#COPY public public
 
 FROM base as prod-build
 
@@ -28,7 +26,7 @@ ENV NEXT_PUBLIC_PRIVACY_POLICY_URL=${PRIVACY_POLICY_URL}
 ARG TERMS_OF_USE_URL
 ENV NEXT_PUBLIC_TERMS_OF_USE_URL=${TERMS_OF_USE_URL}
 
-RUN yarn run build
+RUN pnpm run build
 
 FROM node:20-alpine as production
 # intermediary build stage that only copies the files from nextjs standalone build,
@@ -53,4 +51,4 @@ FROM base as development
 ENV NODE_ENV=development
 
 EXPOSE 3000
-CMD [ "yarn", "dev" ]
+CMD [ "pnpm", "run", "dev" ]
