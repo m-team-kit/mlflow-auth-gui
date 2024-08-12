@@ -17,7 +17,7 @@
             ],
             "env": {
                 "MLFLOW_AUTH_CONFIG_PATH": "${workspaceFolder}/backend/srv/auth_development.ini",
-
+                "MLFLOW_HTTP_REQUEST_TIMEOUT": "600",
             },
             "cwd": "${workspaceFolder}/backend/srv"
         }
