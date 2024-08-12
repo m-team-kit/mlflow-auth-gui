@@ -1,10 +1,12 @@
 """Tests for the 200 status code."""
 
+# pylint: disable=unnecessary-lambda-assignment
 from pytest import mark
-from requests.auth import HTTPBasicAuth
+from tests.utils import HTTPBasicAuth, HTTPBearerAuth
 
 # Authentication objects for the tests
 admin_basic = HTTPBasicAuth(username="admin", password="password")
+admin_bearer = HTTPBearerAuth(token="admin-mock-token")
 
 
 class CommonTestsBase:
@@ -14,7 +16,7 @@ class CommonTestsBase:
 
 
 @mark.parametrize("experiment_id", ["unknown-id"], indirect=True)
-@mark.parametrize("authentication", [admin_basic], indirect=True)
+@mark.parametrize("authentication", [admin_basic, admin_bearer], indirect=True)
 class TestGetNotInDatabase(CommonTestsBase):
 
     def test_reason(self, response):
