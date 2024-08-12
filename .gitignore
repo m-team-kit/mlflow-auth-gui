@@ -6,3 +6,5 @@ basic_auth.db
 /.idea/
 
 /app-data/
+__pycache__/
+mlruns/
