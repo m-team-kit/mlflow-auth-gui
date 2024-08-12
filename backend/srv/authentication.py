@@ -2,12 +2,10 @@ import logging
 from typing import Union
 
 from flask import Response, make_response, request
-from mlflow.server.auth.sqlalchemy_store import SqlAlchemyStore
 from werkzeug.datastructures import Authorization
+from mlflow.server import auth
 
 _logger = logging.getLogger(__name__)
-
-store = SqlAlchemyStore()
 
 
 def authenticate_request_basic_auth() -> Union[Authorization, Response]:
@@ -17,7 +15,7 @@ def authenticate_request_basic_auth() -> Union[Authorization, Response]:
 
     username = request.authorization.username
     password = request.authorization.password
-    if store.authenticate_user(username, password):
+    if auth.store.authenticate_user(username, password):
         return request.authorization
 
     # let user attempt login again
