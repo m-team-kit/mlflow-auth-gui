@@ -13,11 +13,13 @@
                 "server",
                 "--app-name=basic-auth",
                 "--workers=1",
-                "--dev"
+                "--dev",
             ],
             "env": {
                 "MLFLOW_AUTH_CONFIG_PATH": "${workspaceFolder}/backend/srv/auth_development.ini",
                 "MLFLOW_HTTP_REQUEST_TIMEOUT": "600",
+                "FLASK_DEBUG": "True",
+                "FLAAT_TRUSTED_OP_LIST": "['https://aai-dev.egi.eu/auth/realms/egi']",
             },
             "cwd": "${workspaceFolder}/backend/srv"
         }
