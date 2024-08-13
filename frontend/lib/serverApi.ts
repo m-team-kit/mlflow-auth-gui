@@ -11,7 +11,8 @@ const OAUTH_INTROSPECTION =
 const OAUTH_USERINFO =
   process.env['OAUTH_USERINFO_ENDPOINT'] ??
   'https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/userinfo';
-export const SECRETS_VO = process.env['SECRETS_VO'] ?? '';
+export const SECRETS_VO = process.env['USER_CREDENTIALS_SECRETS_VO'] ?? '';
+export const SECRETS_API = process.env['USER_CREDENTIALS_SECRETS_API'] ?? '';
 export const introspect = async (token: string) =>
   fetch(OAUTH_USERINFO, {
     headers: {
@@ -193,7 +194,7 @@ export const mlflowModelGet = async (experimentId: string) =>
 
 export const updateSecret = async (username: string, password: string) =>
   fetch(
-    `https://api.cloud.ai4eosc.eu/v1/secrets?${new URLSearchParams({
+    `${SECRETS_API}/secrets?${new URLSearchParams({
       vo: SECRETS_VO,
       secret_path: '/services/mlflow/credentials',
     }).toString()}`,

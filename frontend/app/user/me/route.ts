@@ -2,6 +2,7 @@ import {
   mlflowUserCreate,
   mlflowUserDelete,
   mlflowUserGet,
+  SECRETS_API,
   SECRETS_VO,
   updateSecret,
 } from '@/lib/serverApi';
@@ -73,7 +74,7 @@ const createMe = async (request: Request, context: UserContext) => {
     return error(500, `Invalid response from MLFlow: ${validation.error.message}`);
   }
 
-  if (SECRETS_VO.length > 0) {
+  if (SECRETS_VO.length > 0 && SECRETS_API.length > 0) {
     const secretResponse = await updateSecret(context.user.email, body.data.password);
     if (!secretResponse.ok) {
       // TODO: delete mlflow user? retry? mlflow and secret should ideally be synchronized, but this control panel is the authority

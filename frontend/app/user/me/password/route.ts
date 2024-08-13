@@ -1,4 +1,4 @@
-import { mlflowUserUpdatePassword, SECRETS_VO, updateSecret } from '@/lib/serverApi';
+import { mlflowUserUpdatePassword, SECRETS_API, SECRETS_VO, updateSecret } from '@/lib/serverApi';
 import { UpdatePasswordRequest } from '@/lib/apiTypes';
 import { error, UserContext, validAuthDecorator } from '@/lib/helpers';
 
@@ -23,7 +23,7 @@ const updateMyPassword = async (request: Request, context: UserContext) => {
     return error(500, "Error updating user's password in mlflow");
   }
 
-  if (SECRETS_VO.length > 0) {
+  if (SECRETS_VO.length > 0 && SECRETS_API.length > 0) {
     const secretResponse = await updateSecret(context.user.email, body.data.password);
     if (!secretResponse.ok) {
       // TODO: delete mlflow user? retry? mlflow and secret should ideally be synchronized, but this control panel is the authority
