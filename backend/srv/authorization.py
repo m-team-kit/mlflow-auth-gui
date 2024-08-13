@@ -26,7 +26,7 @@ def authenticate_request() -> Union[Authorization, Response]:
         case "Basic", token:
             return basic_auth(token)
         case "Bearer", token:
-            raise bearer_auth(token)
+            return bearer_auth(token)
         case _:
             abort(401, "Unsupported authentication method")
 
@@ -37,17 +37,22 @@ def basic_auth(token) -> Union[Authorization, Response]:
     password = request.authorization.password
     if auth.store.authenticate_user(username, password):
         return request.authorization
-    abort(401, "Invalid username or password")
+    abort(401, "Not registered username or invalid password")
 
 
 def bearer_auth(token) -> Union[Authorization, Response]:
-    """Authenticate the request using bearer auth."""
+    """Authenticate the request using bearer auth.
+    THIS IS A HACK, IT USES TOKEN SUBJECT AS USERNAME AND ISSUER AS PASSWORD
+    """
     at_info = get_access_token_info(token)
     if at_info is None:
         return abort(401, "Invalid token")
-    user_info = flaat.get_user_infos_from_access_token(token, at_info.issuer)
+    issuer = at_info.issuer
+    user_info = flaat.get_user_infos_from_access_token(token, issuer)
+    subject = user_info["sub"]
     if user_info is None:
         return abort(401, "Invalid token")
-    if user := auth.store.get_user(user_info["sub"]):
-        return {"username": user.username}
-    return {"username": f"{user_info['sub']}@{user_info['iss']}"}
+    if auth.store.authenticate_user(subject, issuer):
+        data = {"username": subject, "password": issuer}
+        return Authorization("basic", data)
+    abort(401, "Not registered subject or invalid issuer")
