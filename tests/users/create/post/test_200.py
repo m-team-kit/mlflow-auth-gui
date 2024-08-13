@@ -22,3 +22,16 @@ class TestInDatabase(CommonTestsBase):
 
     def test_in_database(self, response):
         raise NotImplementedError
+
+
+user_sub = "some_subject_info@additional_info"
+user_iss = "https://aai-dev.egi.eu/auth/realms/egi"
+
+
+@mark.parametrize("authentication", [admin_basic, admin_bearer], indirect=True)
+@mark.parametrize("username", [user_sub], indirect=True)
+@mark.parametrize("password", [user_iss], indirect=True)
+class TestCreateOPUser(CommonTestsBase):
+
+    def test_in_database(self, response):
+        raise NotImplementedError
