@@ -22,5 +22,7 @@ class TestGetNotInDatabase(CommonTestsBase):
     def test_reason(self, response):
         assert response.reason == "NOT FOUND"
 
-    def test_text(self, response):
-        assert "not found on the server" in response.text
+    def test_content(self, response, experiment_id):
+        assert response.json()["error_code"] == "RESOURCE_DOES_NOT_EXIST"
+        assert "could not find" in response.json()["message"].lower()
+        assert experiment_id in response.json()["message"]
