@@ -24,7 +24,7 @@ RUN mkdir -p /backup_files
 # Set the working directory to /srv
 WORKDIR /srv
 
-ADD --chmod=755 scripts/*.sh /app/
+ADD --chmod=755 scripts/*.sh /srv/
 
 # Create folder to restore files
 RUN mkdir -p /restore_files
