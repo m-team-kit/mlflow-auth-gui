@@ -85,7 +85,7 @@ services:
     build:
       context: ./backup_db
       args:
-        - MLFLOW_VERSION: ${MLFLOW_VERSION}
+        MLFLOW_VERSION: ${MLFLOW_VERSION}
     init: true
     depends_on:
       - database
