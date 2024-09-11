@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends && \
 ENV DEBIAN_FRONTEND=dialog
 
 ARG MLFLOW_VERSION=2.14.3
-RUN python3 -m venv venv && . venv/bin/activate && pip install mlflow
+RUN python3 -m venv venv && . venv/bin/activate && pip install mlflow psycopg2-binary
 
 # Create folder to store backup files
 RUN mkdir -p /backup_files
