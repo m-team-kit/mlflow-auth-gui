@@ -1,7 +1,7 @@
 # ======================================================================
 # stage for backup
 ARG POSTGRES_VERSION=latest
-FROM postgres:${POSTGRES_VERSION} as backup
+FROM postgres:${POSTGRES_VERSION} AS backup
 
 # Install any backup tools (e.g., pg_dump)
 ENV DEBIAN_FRONTEND=noninteractive
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends && \
 ENV DEBIAN_FRONTEND=dialog
 
 ARG MLFLOW_VERSION=2.14.3
-RUN python3 -m venv venv && . venv/bin/activate && pip install mlflow psycopg2-binary
+RUN python3 -m venv venv && . venv/bin/activate && pip install mlflow==${MLFLOW_VERSION} psycopg2-binary
 
 # Create folder to store backup files
 RUN mkdir -p /backup_files
