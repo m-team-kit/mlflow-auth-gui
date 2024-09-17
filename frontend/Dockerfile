@@ -15,6 +15,7 @@ COPY lib lib
 
 FROM base as prod-build
 
+WORKDIR /app
 ARG OIDC_AUTHORITY
 ENV NEXT_PUBLIC_OAUTH_AUTHORITY=${OIDC_AUTHORITY}
 ARG OIDC_CLIENT_ID
@@ -38,7 +39,7 @@ ENV NODE_ENV=production
 
 WORKDIR /app
 COPY --from=prod-build /app/package.json .
-COPY --from=prod-build /app/yarn.lock .
+COPY --from=prod-build /app/pnpm-lock.yaml .
 COPY --from=prod-build /app/next.config.js .
 #COPY --from=prod-build /app/public ./public
 COPY --from=prod-build /app/.next/static ./.next/static
