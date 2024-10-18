@@ -192,7 +192,7 @@ export const mlflowModelGet = async (experimentId: string) =>
     },
   );
 
-export const updateSecret = async (username: string, password: string) =>
+export const updateSecret = async (userAuth: string, username: string, password: string) =>
   fetch(
     `${SECRETS_API}/secrets?${new URLSearchParams({
       vo: SECRETS_VO,
@@ -204,5 +204,22 @@ export const updateSecret = async (username: string, password: string) =>
         username,
         password,
       }),
+      headers: {
+        Authorization: userAuth,
+      },
+    },
+  );
+
+export const deleteSecret = async (userAuth: string) =>
+  fetch(
+    `${SECRETS_API}/secrets?${new URLSearchParams({
+      vo: SECRETS_VO,
+      secret_path: '/services/mlflow/credentials',
+    }).toString()}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: userAuth,
+      },
     },
   );

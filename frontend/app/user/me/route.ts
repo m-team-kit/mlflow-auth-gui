@@ -1,4 +1,5 @@
 import {
+  deleteSecret,
   mlflowUserCreate,
   mlflowUserDelete,
   mlflowUserGet,
@@ -74,8 +75,15 @@ const createMe = async (request: Request, context: UserContext) => {
     return error(500, `Invalid response from MLFlow: ${validation.error.message}`);
   }
 
-  if (SECRETS_VO.length > 0 && SECRETS_API.length > 0) {
-    const secretResponse = await updateSecret(context.user.email, body.data.password);
+  // should be guaranteed to be valid through validAuthDecorator
+  const authorization = request.headers.get('Authorization');
+
+  if (SECRETS_VO.length > 0 && SECRETS_API.length > 0 && authorization != null) {
+    const secretResponse = await updateSecret(
+      authorization,
+      context.user.email,
+      body.data.password,
+    );
     if (!secretResponse.ok) {
       // TODO: delete mlflow user? retry? mlflow and secret should ideally be synchronized, but this control panel is the authority
       //       and allows just changing the password if it goes wrong
@@ -101,6 +109,18 @@ const deleteMe = async (request: Request, context: UserContext) => {
   if (!mlflowDeleteR.ok) {
     console.error('deleteMe failed:', await mlflowDeleteR.text());
     return new Response('Internal Server Error', { status: 500 });
+  }
+
+  // should be guaranteed to be valid through validAuthDecorator
+  const authorization = request.headers.get('Authorization');
+
+  if (SECRETS_VO.length > 0 && SECRETS_API.length > 0 && authorization != null) {
+    const secretResponse = await deleteSecret(authorization);
+    if (!secretResponse.ok) {
+      // TODO: this leaves trash in vault, but not much we can do without workers
+      console.warn('deleteMe waning: could not delete secret:', await secretResponse.text());
+      return error(500, 'Could not delete secret');
+    }
   }
 
   // TODO: use 204 once next fixes their shit
