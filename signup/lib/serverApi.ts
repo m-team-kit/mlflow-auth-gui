@@ -188,6 +188,7 @@ export const mlflowModelGet = async (experimentId: string) =>
     {
       headers: {
         Authorization: localApiAuthorization,
+        'Content-Type': 'application/json',
       },
     },
   );
@@ -206,6 +207,7 @@ export const updateSecret = async (userAuth: string, username: string, password:
       }),
       headers: {
         Authorization: userAuth,
+        'Content-Type': 'application/json',
       },
     },
   );
@@ -220,6 +222,7 @@ export const deleteSecret = async (userAuth: string) =>
       method: 'DELETE',
       headers: {
         Authorization: userAuth,
+        'Content-Type': 'application/json',
       },
     },
   );
