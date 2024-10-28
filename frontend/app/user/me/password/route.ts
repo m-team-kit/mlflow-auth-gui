@@ -23,8 +23,15 @@ const updateMyPassword = async (request: Request, context: UserContext) => {
     return error(500, "Error updating user's password in mlflow");
   }
 
-  if (SECRETS_VO.length > 0 && SECRETS_API.length > 0) {
-    const secretResponse = await updateSecret(context.user.email, body.data.password);
+  // should be guaranteed to be valid through validAuthDecorator
+  const authorization = request.headers.get('Authorization');
+
+  if (SECRETS_VO.length > 0 && SECRETS_API.length > 0 && authorization != null) {
+    const secretResponse = await updateSecret(
+      authorization,
+      context.user.email,
+      body.data.password,
+    );
     if (!secretResponse.ok) {
       // TODO: delete mlflow user? retry? mlflow and secret should ideally be synchronized, but this control panel is the authority
       //       and allows just changing the password if it goes wrong
