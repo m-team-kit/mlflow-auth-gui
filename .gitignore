@@ -1,5 +1,5 @@
 .env
-!/frontend/.env
+!/signup/.env
 basic_auth.db
 
 /traefik/

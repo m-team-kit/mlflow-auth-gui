@@ -7,14 +7,13 @@ import { ifOk, jsonIfOk, NetworkError } from '@/lib/helpers';
 import {
   checkUserExperimentPermissions,
   getExperiment,
-  getUser,
   updateUserExperimentPermissions,
 } from '@/lib/clientApi';
 import { useAuth } from 'react-oidc-context';
 import { GetUserExperimentPermissionResponse } from '@/app/user/permission/experiment/route';
 import useTimedState from '@/lib/useTimedState';
 import ErrorDisplay from '@/components/ErrorDisplay';
-import { Experiment, Permission, Permissions } from '@/lib/mlflowTypes';
+import { Experiment, Permissions } from '@/lib/mlflowTypes';
 
 const DEFAULT_CHECK = 'Check';
 const DEFAULT_UPDATE = 'Update';

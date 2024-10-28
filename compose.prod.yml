@@ -19,7 +19,7 @@ services:
     ports:
       - "443:443"
 
-  backend:
+  mlflow:
     command:
       - server
       - --backend-store-uri=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
@@ -29,13 +29,13 @@ services:
       - --app-name=basic-auth
       - --gunicorn-opts="-t600"
     labels:
-      traefik.http.routers.backend.tls: true
-      traefik.http.routers.backend.tls.certResolver: letsEncrypt
+      traefik.http.routers.mlflow.tls: true
+      traefik.http.routers.mlflow.tls.certResolver: letsEncrypt
 
-  frontend:
+  signup:
     labels:
-      traefik.http.routers.frontend.tls: true
-      traefik.http.routers.frontend.tls.certResolver: letsEncrypt
+      traefik.http.routers.signup.tls: true
+      traefik.http.routers.signup.tls.certResolver: letsEncrypt
 
   goaccess:
     restart: always
@@ -46,7 +46,7 @@ services:
       - ${GOACCESS_OUT_PATH_LOCAL}:/opt/goaccess-out/
     env_file: .env
     networks:
-      - backend
+      - mlflow
     labels:
       traefik.http.routers.goaccess.rule: Host(`${DOMAIN}`) && PathPrefix(`/${GOACCESS_WEB_ROUTE}`)
       traefik.http.routers.goaccess.tls: true
