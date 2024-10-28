@@ -62,7 +62,7 @@ services:
   database:
     image: postgres:latest
     restart: always
-    #user: postgres
+    user: postgres
     # non-root user inside container!
     # (host) volume has to belong to "docker" uid:gid (e.g. lxd:docker)
     volumes:
