@@ -49,8 +49,6 @@ services:
         OIDC_REDIRECT_URI: https://${DOMAIN}/signup
         PRIVACY_POLICY_URL: ${PRIVACY_POLICY_URL}
         TERMS_OF_USE_URL: ${TERMS_OF_USE_URL}
-        SECRETS_VO: ${USER_CREDENTIALS_SECRETS_VO}
-        SECRETS_API: ${USER_CREDENTIALS_SECRETS_API}
     env_file: .env
     networks:
       - mlflow
