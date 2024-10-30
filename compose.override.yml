@@ -1,5 +1,5 @@
 services:
-  backend:
+  mlflow:
     command:
       - server
       - --backend-store-uri=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}

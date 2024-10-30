@@ -11,7 +11,10 @@ const OAUTH_INTROSPECTION =
 const OAUTH_USERINFO =
   process.env['OAUTH_USERINFO_ENDPOINT'] ??
   'https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/userinfo';
-
+export const SECRETS_VO = process.env['USER_CREDENTIALS_SECRETS_VO'] ?? '';
+export const SECRETS_API = process.env['USER_CREDENTIALS_SECRETS_API'] ?? '';
+export const SECRETS_PATH =
+  process.env['USER_CREDENTIALS_SECRETS_PATH'] ?? '/services/mlflow/credentials';
 export const introspect = async (token: string) =>
   fetch(OAUTH_USERINFO, {
     headers: {
@@ -187,6 +190,41 @@ export const mlflowModelGet = async (experimentId: string) =>
     {
       headers: {
         Authorization: localApiAuthorization,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
+export const updateSecret = async (userAuth: string, username: string, password: string) =>
+  fetch(
+    `${SECRETS_API}/secrets?${new URLSearchParams({
+      vo: SECRETS_VO,
+      secret_path: SECRETS_PATH,
+    }).toString()}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        username,
+        password,
+      }),
+      headers: {
+        Authorization: userAuth,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
+export const deleteSecret = async (userAuth: string) =>
+  fetch(
+    `${SECRETS_API}/secrets?${new URLSearchParams({
+      vo: SECRETS_VO,
+      secret_path: SECRETS_PATH,
+    }).toString()}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: userAuth,
+        'Content-Type': 'application/json',
       },
     },
   );

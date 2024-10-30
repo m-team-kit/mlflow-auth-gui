@@ -3,26 +3,26 @@ services:
     restart: unless-stopped
     image: traefik:v2.10
     networks:
-      - backend
+      - mlflow
     command:
       - "--entrypoints.web.address=:80"
       - "--providers.docker"
     depends_on:
-      - backend
+      - mlflow
     ports:
       - "80:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  backend:
+  mlflow:
     restart: always
-    build: ./backend
+    build: mlflow
     depends_on:
       - database
     networks:
-      - backend
+      - mlflow
     volumes:
-      - ./backend/srv:/srv
+      - ./mlflow/srv:/srv
       - ${MLFLOW_BASE_PATH_LOCAL}/user-data:/var/data/user-data
       - ${MLFLOW_BASE_PATH_LOCAL}/app-data:/var/data/app-data
       - ${MLFLOW_BASE_PATH_LOCAL}/mlruns-data:/mlruns
@@ -32,16 +32,16 @@ services:
     expose:
       - 5000
     labels:
-      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`) && !PathPrefix(`/signup`) && !PathPrefix(`/${GOACCESS_WEB_ROUTE}`)"
+      - "traefik.http.routers.mlflow.rule=Host(`${DOMAIN}`) && !PathPrefix(`/signup`) && !PathPrefix(`/${GOACCESS_WEB_ROUTE}`)"
       - "traefik.http.middlewares.limit.buffering.maxRequestBodyBytes=12884901888"
       - "traefik.http.middlewares.limit.buffering.memRequestBodyBytes=10485760"
       - "traefik.http.middlewares.limit.buffering.maxResponseBodyBytes=12884901888"
       - "traefik.http.middlewares.limit.buffering.memResponseBodyBytes=10485760"
 
-  frontend:
+  signup:
     restart: always
     build:
-      context: ./frontend
+      context: signup
       target: production
       args:
         OIDC_AUTHORITY: ${OIDC_AUTHORITY}
@@ -51,16 +51,16 @@ services:
         TERMS_OF_USE_URL: ${TERMS_OF_USE_URL}
     env_file: .env
     networks:
-      - backend
+      - mlflow
     depends_on:
-      - backend
+      - mlflow
     labels:
-      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`) && PathPrefix(`/signup`)"
+      - "traefik.http.routers.signup.rule=Host(`${DOMAIN}`) && PathPrefix(`/signup`)"
 
   database:
     image: postgres:latest
     restart: always
-    #user: postgres
+    user: postgres
     # non-root user inside container!
     # (host) volume has to belong to "docker" uid:gid (e.g. lxd:docker)
     volumes:
@@ -70,7 +70,7 @@ services:
       - POSTGRES_DB=${DATABASE_NAME:?DATABASE_NAME is not set}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?DATABASE_PASSWORD is not set}
     networks:
-      - backend
+      - mlflow
     healthcheck:
       test: ["CMD", "pg_isready"]
       interval: 10s
@@ -89,7 +89,7 @@ services:
       - ${MLFLOW_BASE_PATH_LOCAL}/app-data:/var/data/app-data
     env_file: .env
     networks:
-      - backend
+      - mlflow
     healthcheck:
       test: ["CMD", "bash"]
       interval: 10s
@@ -97,7 +97,7 @@ services:
       retries: 5
 
 networks:
-  backend:
+  mlflow:
 
 #volumes:
 #  user-data:
