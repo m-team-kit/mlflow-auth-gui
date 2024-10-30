@@ -69,11 +69,11 @@ const LoggedIn: FC = () => {
 
   return (
     <>
-      <h1>MLFlow {data.mlflow ? 'User Settings' : 'Registration'}</h1>
+      <h1>MLflow {data.mlflow ? 'User Settings' : 'Registration'}</h1>
       {data.mlflow && <div>UserID: {data.mlflow.user.id}</div>}
       <div>Email: {data.oidc.email}</div>
       {data.mlflow && data.mlflow.user.username !== data.oidc.email && (
-        <div>MLFlow username: {data.mlflow.user.username}</div>
+        <div>MLflow username: {data.mlflow.user.username}</div>
       )}
       <div>Registered: {data.mlflow != null ? 'Yes' : 'No'}</div>
       {data.mlflow && <div>Admin: {data.mlflow.user.is_admin ? 'Yes' : 'No'}</div>}
