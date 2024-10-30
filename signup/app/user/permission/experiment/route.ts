@@ -1,6 +1,5 @@
 import {
   mlflowExperimentPermissionCreate,
-  mlflowExperimentPermissionGet,
   mlflowExperimentPermissionUpdate,
 } from '@/lib/serverApi';
 import { GetExperimentPermissionRequest, UpdateExperimentPermissionRequest } from '@/lib/apiTypes';
@@ -12,7 +11,7 @@ import {
 } from '@/lib/helpers';
 import { NextRequest } from 'next/server.js';
 import { getExperimentPermission } from '@/app/user/permission/experiment/operations';
-import { ExperimentPermission, Permission, Permissions } from '@/lib/mlflowTypes';
+import { Permission, Permissions } from '@/lib/mlflowTypes';
 
 export type GetUserExperimentPermissionResponse = {
   username: string;

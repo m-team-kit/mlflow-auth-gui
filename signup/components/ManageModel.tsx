@@ -41,7 +41,7 @@ const ManageModel: FC<ManageModelProps> = ({ modelName, onHide }) => {
   );
 
   const [checkLabel, setCheckLabel, resetCheckLabel] = useTimedState(DEFAULT_CHECK);
-  const [updateLabel, setUpdateLabel, resetUpdateLabel] = useTimedState(DEFAULT_UPDATE);
+  const [updateLabel, setUpdateLabel] = useTimedState(DEFAULT_UPDATE);
 
   return (
     <dialog

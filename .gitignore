@@ -1,8 +1,11 @@
 .env
-!/frontend/.env
+!/signup/.env
 basic_auth.db
 
 /traefik/
 /.idea/
 
 /app-data/
+/goaccess-etc
+/goaccess-out
+/backup_db
