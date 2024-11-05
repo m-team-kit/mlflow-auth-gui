@@ -1,39 +1,30 @@
 # ======================================================================
 # stage for backup
 ARG POSTGRES_VERSION=latest
-FROM postgres:${POSTGRES_VERSION} as backup
+FROM postgres:${POSTGRES_VERSION} AS backup
 
 # Install any backup tools (e.g., pg_dump)
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends && \
     # Install cron tools
-    apt-get install -y cron && which cron && \
+    apt-get install -y cron sqlite3 postgresql-client python3 python3-pip python3-psycopg2 python3-venv && which cron && \
     rm -rf /etc/cron.*/* && \
     # Clean up & back to dialog front end
     apt-get autoremove -y && \
-    apt-get install -y sqlite3 && \
-    apt-get install -y postgresql-client && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=dialog
+
+ARG MLFLOW_VERSION=2.14.3
+RUN python3 -m venv venv && . venv/bin/activate && pip install mlflow==${MLFLOW_VERSION} psycopg2-binary
 
 # Create folder to store backup files
 RUN mkdir -p /backup_files
 
 # Set the working directory to /srv
 WORKDIR /srv
-COPY scripts/start-cron.sh start-cron.sh
-COPY scripts/backup_script.sh backup_script.sh
-COPY scripts/backup_script_sqlite.sh backup_script_sqlite.sh
-COPY scripts/restore_manually.sh restore_manually.sh
-COPY scripts/restore_manually_sqlite.sh restore_manually_sqlite.sh
 
-# Make the scripts executable
-RUN chmod +x start-cron.sh \
-    backup_script.sh \
-    backup_script_sqlite.sh \
-    restore_manually.sh \
-    restore_manually_sqlite.sh
+ADD --chmod=755 scripts/*.sh /srv/
 
 # Create folder to restore files
 RUN mkdir -p /restore_files
