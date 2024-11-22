@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC, useState } from 'react';
+import { type FC, useRef, useState } from 'react';
 import { useAuth } from 'react-oidc-context';
 import AuthContext from '@/components/AuthContext';
 import useSWR from 'swr';
@@ -12,6 +12,7 @@ import ErrorDisplay from '@/components/ErrorDisplay';
 import { privacyPolicyUrl, termsOfUseUrl } from '@/app/links';
 import ManageModel from '@/components/ManageModel';
 import ManageExperiment from '@/components/ManageExperiment';
+import modalStyle from '@/components/Modal.module.scss';
 
 import { Permissions } from '@/lib/mlflowTypes';
 
@@ -46,6 +47,8 @@ const LoggedIn: FC = () => {
 
   const [manageModel, setManageModel] = useState<string | null>(null);
   const [manageExperiment, setManageExperiment] = useState<string | null>(null);
+
+  const deleteAccountRef = useRef<HTMLDialogElement>(null);
 
   if (error != null) {
     return <ErrorDisplay message="An error occurred" error={error} />;
@@ -86,6 +89,29 @@ const LoggedIn: FC = () => {
         />
       )}
 
+      <dialog ref={deleteAccountRef} className={modalStyle.modal}>
+        <h2>Are you sure you want to delete your account?</h2>
+        <div className={modalStyle.buttons}>
+          <Button
+            onClick={() => {
+              deleteUser(auth.user!.access_token)
+                .then(ifOk)
+                .then(() => deleteAccountRef.current?.close())
+                .then(() => swr.mutate())
+                .catch(setError);
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            onClick={() => {
+              deleteAccountRef.current?.close();
+            }}
+          >
+            No
+          </Button>
+        </div>
+      </dialog>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -238,10 +264,7 @@ const LoggedIn: FC = () => {
         {data.mlflow != null && (
           <Button
             onClick={() => {
-              deleteUser(auth.user!.access_token)
-                .then(ifOk)
-                .then(() => swr.mutate())
-                .catch(setError);
+              deleteAccountRef.current?.show();
             }}
           >
             Delete my account

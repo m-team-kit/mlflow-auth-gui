@@ -1,6 +1,15 @@
 .modal {
+  @apply prose rounded border-2 bg-white p-2 dark:prose-invert dark:bg-black;
+  z-index: 100;
 }
 
 .modal::backdrop {
   background: rgba(0, 0, 0, 0.5);
+}
+
+.modal > .buttons {
+  gap: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
 }

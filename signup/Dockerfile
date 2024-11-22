@@ -1,4 +1,4 @@
-FROM node:20-alpine as base
+FROM node:22-alpine AS base
 
 WORKDIR /app
 ENV PNPM_HOME="/pnpm"
@@ -13,7 +13,7 @@ COPY app app
 COPY components components
 COPY lib lib
 
-FROM base as prod-build
+FROM base AS prod-build
 
 WORKDIR /app
 ARG OIDC_AUTHORITY
@@ -29,7 +29,7 @@ ENV NEXT_PUBLIC_TERMS_OF_USE_URL=${TERMS_OF_USE_URL}
 
 RUN pnpm run build
 
-FROM node:20-alpine as production
+FROM node:22-alpine AS production
 # intermediary build stage that only copies the files from nextjs standalone build,
 #  which does not carry unused code
 # this should also drop envs from previous steps
@@ -48,7 +48,7 @@ COPY --from=prod-build /app/.next/standalone ./
 EXPOSE 3000
 CMD ["node", "server.js"]
 
-FROM base as development
+FROM base AS development
 ENV NODE_ENV=development
 
 EXPOSE 3000

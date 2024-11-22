@@ -9,3 +9,5 @@ basic_auth.db
 /goaccess-etc
 /goaccess-out
 /backup_db
+
+/mlflow-data/
