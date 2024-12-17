@@ -11,7 +11,18 @@ const oidcConfig: AuthProviderProps = {
   client_id: process.env['NEXT_PUBLIC_OIDC_CLIENT_ID'] ?? 'eosc-performance',
   redirect_uri:
     process.env['NEXT_PUBLIC_OIDC_REDIRECT_URL'] ?? 'http://localhost:3000/oidc-redirect',
-  scope: 'openid email eduperson_entitlement offline_access',
+  scope: [
+    // basic
+    'openid',
+    // oidc email used as identifier
+    'email',
+    // required to check group memberships for access
+    'eduperson_entitlement',
+    // required for refreshing tokens
+    'offline_access',
+    // vault secrets api requires having a name
+    'profile',
+  ].join(' '),
   //autoSignIn: false,
   response_type: 'code',
 };
