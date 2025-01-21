@@ -11,8 +11,7 @@ DB_HOST="${DATABASE_HOST:?DATABASE_HOST  environment variable is not set}"
 DB_PORT="${DATABASE_PORT:?DATABASE_PORT environment variable  is not set}"
 
 export PGPASSWORD=$DB_PASSWORD #mlflow gc command may internally use 
-                                #PostgreSQL utilities or libraries that rely on PGPASSWORD for authentication.
-
+                               #PostgreSQL utilities or libraries that rely on PGPASSWORD for authentication.
 
 # Construct the psql connection string
 PSQL_CONNECTION_STRING="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
@@ -23,6 +22,10 @@ export MLFLOW_TRACKING_URI="$MLFLOW_HOSTNAME"
 
 . /venv/bin/activate
 
+# add timestamp in the log file in the ISO8601 standard
+echo -n "$(date --iso-8601=seconds) :" >> $BACKUP_DIR/mlflow_gc.log
+
+# run mlflow garbage collection
 mlflow gc --backend-store-uri "${PSQL_CONNECTION_STRING}" --older-than 30d 2>&1 | tee -a $BACKUP_DIR/mlflow_gc.log
 
 if [ $? -eq 0 ]; then
