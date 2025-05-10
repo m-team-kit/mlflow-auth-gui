@@ -2,40 +2,118 @@
 #
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2018 - 2023 Karlsruhe Institute of Technology - Steinbuch Centre for Computing
+# Copyright (c) 2025 Karlsruhe Institute of Technology - Steinbuch Centre for Computing
 # This code is distributed under the Apache 2.0 License
 # Please, see the LICENSE file
+#
+# Script to list MLflow experiments and add a general READER user to every experiment
 #
 # @author: vykozlov
 
 # Must be available:
 # MLFLOW_HOSTNAME
-# MLFLOW_USER
+# MLFLOW_USERNAME
 # MLFLOW_PASSWORD
 # READER_AGENT
 
-debug=true
-
-# load variable from .env
-#SCRIPT_PATH="$(dirname "$(readlink -f "$0")")"
-SCRIPT_PATH="/opt/cloudadm/mlflow-compose"
 LOG_FILES_PATH="/backup_files"
-LOG_FILES_PATH="$SCRIPT_PATH"
 
-source ${SCRIPT_PATH}/.env
-
-MLFLOW_HOSTNAME="https://mlflow.cloud.ai4eosc.eu"
-MLFLOW_ADMIN=$MLFLOW_USERNAME
-MLFLOW_ADMIN_PASSWORD=$MLFLOW_PASSWORD
-READER_AGENT="ci-agent"
+MLFLOW_HOSTNAME="${MLFLOW_HOSTNAME:-http://mlflow:5000}"
+MLFLOW_ADMIN="${MLFLOW_USERNAME:-admin}"
+MLFLOW_ADMIN_PASSWORD="${MLFLOW_PASSWORD:?MLFLOW_PASSWORD is not set}"
 READER_PERMISSION="READ"
+READER_AGENT="${READER_AGENT:-ci-agent}"
 
-# default MAX_RESULTS
+# defaults
 MAX_RESULTS=150
+check_latest=true
+check_all=false
+force_read=false
+verbose=false
+
+###
+### USAGE and PARSE SCRIPT FLAGS
+function usage()
+{
+    shopt -s xpg_echo
+    echo "Usage: $0 <options> \n
+    Options:
+    -h|--help \t\t This help message
+    -a|--all \t\t Check all MLflow experiment_ids for READER agent
+    -f|--force-read \t Force READ permissions for experiment_ids to check
+    -l|--latest \t Check only latest MLflow experiment_ids for READER agent (default)
+    -d|--debug \t Activate debugging mode (prints more outputs)" 1>&2; exit 0; 
+}
+
+function check_arguments()
+{
+    OPTIONS=h,a,f,l,d
+    LONGOPTS=help,all,force-read,latest,debug
+    # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
+    #set -o errexit -o pipefail -o noclobber -o nounset
+    set  +o nounset
+    ! getopt --test > /dev/null
+    if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
+        echo '`getopt --test` failed in this environment.'
+        exit 1
+    fi
+
+    # -use ! and PIPESTATUS to get exit code with errexit set
+    # -temporarily store output to be able to check for errors
+    # -activate quoting/enhanced mode (e.g. by writing out “--options”)
+    # -pass arguments only via   -- "$@"   to separate them correctly
+    ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
+    if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
+        # e.g. return value is 1
+        #  then getopt has complained about wrong arguments to stdout
+        exit 2
+    fi
+    # read getopt’s output this way to handle the quoting right:
+    eval set -- "$PARSED"
+
+    if [ "$1" == "--" ]; then
+        echo "[INFO] No arguments provided, using defaults."
+    fi
+    # now enjoy the options in order and nicely split until we see --
+    while true; do
+        case "$1" in
+            -h|--help)
+                usage
+                shift
+                ;;
+            -a|--all)
+                check_all=true
+                check_latest=false
+                shift
+                ;;
+            -f|--force-read)
+                force_read=true
+                shift
+                ;;
+            -l|--latest)
+                check_latest=true
+                check_all=false
+                shift
+                ;;
+            -d|--debug)
+                debug=true
+                shift
+                ;;
+            --)
+                shift
+                break
+                ;;
+            *)
+                break
+                ;;
+            esac
+        done
+}
+
 
 ###
 # DEFINE API CALLs as functions
-###
+#
 # API call to request list of all experiments (SEARCH)
 # https://mlflow.org/docs/latest/api_reference/rest-api.html#search-experiments
 curl_experiments_search(){
@@ -72,8 +150,19 @@ curl_permissions_update() {
   --user "${MLFLOW_ADMIN}:${MLFLOW_ADMIN_PASSWORD}"
 }
 ###
+
+### SCRIPT STARTS
 # print current time accroding to ISO 8601
 echo $(date -Iminutes)
+
+check_arguments "$0" "$@"
+
+if [ "$debug" = true ]; then
+  echo "MLFLOW_HOSTNAME=$MLFLOW_HOSTNAME"
+  echo "MLFLOW_ADMIN=$MLFLOW_ADMIN"
+  echo "READER_AGENT=$READER_AGENT"
+  echo "LOG_FILES_PATH=$LOG_FILES_PATH"
+fi
 
 # read LAST_EXPERIMENT_ID from the file
 LAST_EXPERIMENT_ID_PATH="$LOG_FILES_PATH/last-experiment-id"
@@ -95,7 +184,7 @@ experiments_search_json=$(curl_experiments_search $MAX_RESULTS)
 # Extract experiment_ids
 experiment_ids=($(echo "$experiments_search_json" | jq -r '.experiments[].experiment_id'))
 
-if [ debug ]; then
+if [ $debug ]; then
   echo "Found experiment ids: ${experiment_ids[@]}"
 fi
 
@@ -113,7 +202,13 @@ for id in "${experiment_ids[@]}"; do
   fi
 done
 
-experiment_ids_to_check=("${experiment_ids_new[@]}")
+if [ "$check_all" = true ]; then
+  experiment_ids_to_check=("${experiment_ids[@]}")
+fi
+
+if [ "$check_latest" = true ]; then
+  experiment_ids_to_check=("${experiment_ids_new[@]}")
+fi
 
 if [ ${#experiment_ids_to_check[@]} -gt 0 ]; then
   echo "Experiment ids to check: ${experiment_ids_to_check[@]}"
@@ -128,13 +223,15 @@ if [ ${#experiment_ids_to_check[@]} -gt 0 ]; then
       echo "CREATED: $permissions_create_json"
     fi
 
-    # OPTIONALLY may also always RESET permissions to READ
-    PERMISSION_READ=$(echo $permissions_get_json |grep -i "\"permission\":\"$READER_PERMISSION\"")
-    if [ ${#PERMISSION_READ} -le 1 ] && [ ${#RESOURCE_DOES_NOT_EXIST} -le 1 ]; then
-      echo "FOUND: $permissions_get_json"
-      permissions_updated_json=$(curl_permissions_update $eid)
-      permissions_get_updated_json=$(curl_permissions_get $eid)
-      echo "UPDATED to: $permissions_get_updated_json"
+    # OPTIONALLY may also RESET permissions to READ
+    if [ "$force_read" = true ]; then
+      PERMISSION_READ=$(echo $permissions_get_json |grep -i "\"permission\":\"$READER_PERMISSION\"")
+      if [ ${#PERMISSION_READ} -le 1 ] && [ ${#RESOURCE_DOES_NOT_EXIST} -le 1 ]; then
+        echo "FOUND: $permissions_get_json"
+        permissions_updated_json=$(curl_permissions_update $eid)
+        permissions_get_updated_json=$(curl_permissions_get $eid)
+        echo "UPDATED to: $permissions_get_updated_json"
+      fi
     fi
   done
 fi
