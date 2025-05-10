@@ -17,6 +17,7 @@
 # READER_AGENT
 
 LOG_FILES_PATH="/backup_files"
+LAST_EXPERIMENT_ID_PATH="$LOG_FILES_PATH/mlflow-last-experiment-id"
 
 MLFLOW_HOSTNAME="${MLFLOW_HOSTNAME:-http://mlflow:5000}"
 MLFLOW_ADMIN="${MLFLOW_USERNAME:-admin}"
@@ -161,11 +162,10 @@ if [ "$debug" = true ]; then
   echo "MLFLOW_HOSTNAME=$MLFLOW_HOSTNAME"
   echo "MLFLOW_ADMIN=$MLFLOW_ADMIN"
   echo "READER_AGENT=$READER_AGENT"
-  echo "LOG_FILES_PATH=$LOG_FILES_PATH"
+  echo "LAST_EXPERIMENT_ID_PATH=$LAST_EXPERIMENT_ID_PATH"
 fi
 
 # read LAST_EXPERIMENT_ID from the file
-LAST_EXPERIMENT_ID_PATH="$LOG_FILES_PATH/last-experiment-id"
 # if file does not exist => create
 if [ ! -e "$LAST_EXPERIMENT_ID_PATH" ]; then
   echo "LAST_EXPERIMENT_ID=0" >$LAST_EXPERIMENT_ID_PATH

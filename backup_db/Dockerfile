@@ -7,7 +7,10 @@ FROM postgres:${POSTGRES_VERSION} AS backup
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends && \
     # Install cron tools
-    apt-get install -y cron sqlite3 postgresql-client python3 python3-pip python3-psycopg2 python3-venv && which cron && \
+    apt-get install -y cron sqlite3 postgresql-client \
+    python3 python3-pip python3-psycopg2 python3-venv \
+    curl jq && \
+    which cron && \
     rm -rf /etc/cron.*/* && \
     # Clean up & back to dialog front end
     apt-get autoremove -y && \
