@@ -32,6 +32,7 @@ services:
     env_file: .env
     environment:
       - MLFLOW_AUTH_CONFIG_PATH=/srv/auth_config.ini
+      - MLFLOW_FLASK_SERVER_SECRET_KEY=${MLFLOW_FLASK_SERVER_SECRET_KEY}
     expose:
       - 5000
     labels:
