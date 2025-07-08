@@ -8,21 +8,23 @@ const oidcConfig: AuthProviderProps = {
     (process.env.NODE_ENV === 'development'
       ? 'https://aai-demo.egi.eu/auth/realms/egi/'
       : 'https://aai.egi.eu/auth/realms/egi/'),
-  client_id: process.env['NEXT_PUBLIC_OIDC_CLIENT_ID'] ?? 'eosc-performance',
+  client_id: process.env['NEXT_PUBLIC_OIDC_CLIENT_ID'] ?? 'mlflow-ai4eosc',
   redirect_uri:
     process.env['NEXT_PUBLIC_OIDC_REDIRECT_URL'] ?? 'http://localhost:3000/oidc-redirect',
-  scope: [
-    // basic
-    'openid',
-    // oidc email used as identifier
-    'email',
-    // required to check group memberships for access
-    'eduperson_entitlement',
-    // required for refreshing tokens
-    'offline_access',
-    // vault secrets api requires having a name
-    'profile',
-  ].join(' '),
+//  scope: [
+//    // basic
+//    'openid',
+//    // oidc email used as identifier
+//    'email',
+//    // required to check group memberships for access
+//    'eduperson_entitlement',
+//    // required for refreshing tokens
+//    'offline_access',
+//    // vault secrets api requires having a name
+//    'profile',
+/  ].join(' '),
+  scope:
+    process.env['NEXT_PUBLIC_OIDC_SCOPE'] ?? 'openid email offline_access profile',
   //autoSignIn: false,
   response_type: 'code',
 };
