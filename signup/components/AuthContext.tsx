@@ -22,7 +22,7 @@ const oidcConfig: AuthProviderProps = {
 //    'offline_access',
 //    // vault secrets api requires having a name
 //    'profile',
-/  ].join(' '),
+//  ].join(' '),
   scope:
     process.env['NEXT_PUBLIC_OIDC_SCOPE'] ?? 'openid email offline_access profile',
   //autoSignIn: false,
