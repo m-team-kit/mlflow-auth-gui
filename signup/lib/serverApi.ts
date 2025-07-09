@@ -5,12 +5,24 @@ const localApiAuthorization = `Basic ${Buffer.from(
 ).toString('base64')}`;
 
 const HOSTNAME = process.env['MLFLOW_HOSTNAME'] ?? 'http://localhost';
+
+// const HOSTNAME = process.env['MLFLOW_HOSTNAME'] ?? 'http://localhost';
+// const OAUTH_INTROSPECTION =
+//   process.env['OAUTH_INTROSPECTION_ENDPOINT'] ??
+//   'https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/token/introspect';
+// const OAUTH_USERINFO =
+//   process.env['OAUTH_USERINFO_ENDPOINT'] ??
+//   'https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/userinfo';
+
 const OAUTH_INTROSPECTION =
   process.env['OAUTH_INTROSPECTION_ENDPOINT'] ??
-  'https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/token/introspect';
+  'https://login.cloud.ai4eosc.eu/realms/ai4eosc/protocol/openid-connect/token/introspect';
+  
+
 const OAUTH_USERINFO =
   process.env['OAUTH_USERINFO_ENDPOINT'] ??
-  'https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/userinfo';
+  'https://login.cloud.ai4eosc.eu/realms/ai4eosc/protocol/openid-connect/userinfo';
+
 export const SECRETS_VO = process.env['USER_CREDENTIALS_SECRETS_VO'] ?? '';
 export const SECRETS_API = process.env['USER_CREDENTIALS_SECRETS_API'] ?? '';
 export const SECRETS_PATH =
@@ -21,6 +33,7 @@ export const introspect = async (token: string) =>
       Authorization: token,
     },
   });
+  
 
 export const mlflowUserGet = async (username: string) =>
   fetch(

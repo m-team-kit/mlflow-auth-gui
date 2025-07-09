@@ -3,21 +3,51 @@ import { ExperimentPermission, Permission, RegisteredModelPermission } from '@/l
 
 export const UserInfoResponse = z.object({
   sub: z.string(),
-  eduperson_entitlement: z.optional(z.array(z.string())),
   email: z.string(),
   email_verified: z.boolean(),
+
+  // AI4EOSC specific
+  groups: z.optional(z.array(z.string())),
+  group_membership: z.optional(z.array(z.string())),
+  realm_access: z.optional(z.object({
+    roles: z.array(z.string()),
+  })),
+
+  resource_access: z.optional(z.record(z.object({
+    roles: z.array(z.string()),
+  }))),
+  
+  preferred_username: z.optional(z.string()),
+  given_name: z.optional(z.string()),
+  family_name: z.optional(z.string()),
+  name: z.optional(z.string()),
+  upn: z.optional(z.string()),
+
+  // EGI specific
+  eduperson_entitlement: z.optional(z.array(z.string()))
 });
+
 export type UserinfoResponse = z.infer<typeof UserInfoResponse>;
 
 export const IntrospectionResponse = z.object({
   active: z.boolean(),
   client_id: z.string(),
-  eduperson_entitlement: z.optional(z.array(z.string())),
   email: z.string(),
   email_verified: z.boolean(),
   iss: z.string(),
   scope: z.string(),
+
+  // EGI-specific (optional)
+  eduperson_entitlement: z.optional(z.array(z.string())),
+
+  // AI4EOSC-specific (optional)
+  groups: z.optional(z.array(z.string())),
+  realm_access: z.optional(z.object({
+    roles: z.array(z.string()),
+  })),
+  // add more fields here if needed
 });
+
 export type IntrospectionResponse = z.infer<typeof IntrospectionResponse>;
 
 const Password = z.string().min(1, 'Password must be at least 1 character long');
