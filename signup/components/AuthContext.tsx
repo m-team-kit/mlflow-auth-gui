@@ -8,8 +8,8 @@ const introspectionEndpoint = process.env['NEXT_PUBLIC_OAUTH_INTROSPECTION_ENDPO
 const isAI4EOSC = introspectionEndpoint.includes('ai4eosc');
 
 // Role/Group validation for AI4EOSC
-//const requiredGroupAI4EOSC = process.env['REQUIRED_GROUP_AI4EOSC'] ?? 'vo.ai4eosc.eu';
-const requiredRealmRoles = process.env['REQUIRED_REALM_ROLES_AI4EOSC']?.split(',') ?? ['vo.ai4eosc.eu', 'platform-access:vo.ai4eosc.eu'];
+//const requiredGroupAI4EOSC = process.env['REQUIRED_GROUP'] ?? 'vo.ai4eosc.eu';
+const requiredRealmRoles = process.env['REQUIRED_REALM_ROLES']?.split(',') ?? ['vo.ai4eosc.eu', 'platform-access:vo.ai4eosc.eu'];
 
 // Role/Group validation for EGI
 const requiredEntitlement = process.env['REQUIRED_ENTITLEMENT'] ?? 'urn:mace:egi.eu:group:vo.ai4eosc.eu:role=member#aai.egi.eu';
