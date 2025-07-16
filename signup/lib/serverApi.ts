@@ -6,7 +6,7 @@ const localApiAuthorization = `Basic ${Buffer.from(
 
 const HOSTNAME = process.env['MLFLOW_HOSTNAME'] ?? 'http://localhost';
 
-// const HOSTNAME = process.env['MLFLOW_HOSTNAME'] ?? 'http://localhost';
+// If OIDC Option 1 is set
 // const OAUTH_INTROSPECTION =
 //   process.env['OAUTH_INTROSPECTION_ENDPOINT'] ??
 //   'https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/token/introspect';
@@ -14,6 +14,7 @@ const HOSTNAME = process.env['MLFLOW_HOSTNAME'] ?? 'http://localhost';
 //   process.env['OAUTH_USERINFO_ENDPOINT'] ??
 //   'https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/userinfo';
 
+// If OIDC Option 2 is set
 const OAUTH_INTROSPECTION =
   process.env['OAUTH_INTROSPECTION_ENDPOINT'] ??
   'https://login.cloud.ai4eosc.eu/realms/ai4eosc/protocol/openid-connect/token/introspect';
@@ -22,6 +23,20 @@ const OAUTH_INTROSPECTION =
 const OAUTH_USERINFO =
   process.env['OAUTH_USERINFO_ENDPOINT'] ??
   'https://login.cloud.ai4eosc.eu/realms/ai4eosc/protocol/openid-connect/userinfo';
+
+
+// Check OIDC configuration vars for missing or empty values
+
+if (!OAUTH_INTROSPECTION || OAUTH_INTROSPECTION.trim() === '') {
+  throw new Error('Missing required environment variable: OAUTH_INTROSPECTION_ENDPOINT');
+}
+
+if (!OAUTH_USERINFO || OAUTH_USERINFO.trim() === '') {
+  throw new Error('Missing required environment variable: OAUTH_USERINFO_ENDPOINT');
+}
+
+console.log('OAUTH_INTROSPECTION:', OAUTH_INTROSPECTION.trim());
+console.log('OAUTH_USERINFO:', OAUTH_USERINFO.trim());
 
 export const SECRETS_VO = process.env['USER_CREDENTIALS_SECRETS_VO'] ?? '';
 export const SECRETS_API = process.env['USER_CREDENTIALS_SECRETS_API'] ?? '';

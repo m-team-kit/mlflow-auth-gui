@@ -51,71 +51,47 @@ export const error = (status: number, message: string): Response =>
 
 type Context<T> = T extends Record<string, any> ? T : never;
 
-// detect which provider is config based on available fields in userinfo
-const detectProviderType = (userInfo: UserinfoResponse): 'egi' | 'ai4eosc' => {
-  // EGI provider has eduperson_entitlement field
-  if (userInfo.eduperson_entitlement != null) {
-    return 'egi';
+const requiredEntitlement = process.env['REQUIRED_ENTITLEMENT']?.split(',') ?? [
+  'urn:mace:egi.eu:group:vo.ai4eosc.eu:role=member#aai.egi.eu',
+];
+
+const requiredRealmRoles = process.env['REQUIRED_REALM_ROLES']?.split(',') ?? [
+  'vo.ai4eosc.eu',
+  'platform-access:vo.ai4eosc.eu',
+];
+
+// Detect which validation method to use based on env vars
+const detectProviderType = (): 'realm_roles' | 'entitlement' | 'none' => {
+  const hasRealmRolesEnv = !!process.env['REQUIRED_REALM_ROLES'];
+  const hasEntitlementEnv = !!process.env['REQUIRED_ENTITLEMENT'];
+
+  if (hasRealmRolesEnv && hasEntitlementEnv) {
+    console.error('Misconfiguration: Both REQUIRED_REALM_ROLES and REQUIRED_ENTITLEMENT are set. Only one must be defined.');
+    return 'none';
   }
-  
-  // AI4EOSC provider has groups, realm_access, or group_membership fields
-  if (userInfo.groups != null || userInfo.realm_access != null || userInfo.group_membership != null) {
-    return 'ai4eosc';
-  }
-  
-  // Default to AI4EOSC if no specific fields are found
-  return 'ai4eosc';
+
+  if (hasRealmRolesEnv) return 'realm_roles';
+  if (hasEntitlementEnv) return 'entitlement';
+  return 'none';
 };
 
 const validateUserAccess = (userInfo: UserinfoResponse): boolean => {
-  const providerType = detectProviderType(userInfo);
-  
-  if (providerType === 'egi') {
-    // EGI provider validation using entitlements
-    const requiredEntitlement = process.env['REQUIRED_ENTITLEMENT']?.split(',') ?? [
-      'urn:mace:egi.eu:group:vo.ai4eosc.eu:role=member#aai.egi.eu',
-    ];
-    
-    if (
-      userInfo.eduperson_entitlement == null ||
-      !requiredEntitlement.some(
-        (entitlement) => userInfo.eduperson_entitlement?.includes(entitlement) ?? false,
-      )
-    ) {
-      return false;
-    }
-  } else if (providerType === 'ai4eosc') {
-    // AI4EOSC provider validation using groups and realm roles
-    const requiredGroup = process.env['REQUIRED_GROUP_AI4EOSC']?.split(',') ?? ['vo.ai4eosc.eu'];
-    const requiredRealmRoles = process.env['REQUIRED_REALM_ROLES_AI4EOSC']?.split(',') ?? [];
-    
-    const hasRequiredGroup = requiredGroup.some((group) => {
-      // Check in groups array
-      if (userInfo.groups?.includes(group)) {
-        return true;
-      }
-      // Check in realm_access.roles array
-      if (userInfo.realm_access?.roles?.includes(group)) {
-        return true;
-      }
-      // Check in group_membership array (for path-based groups)
-      if (userInfo.group_membership?.some((membership) => membership.includes(group))) {
-        return true;
-      }
-      return false;
-    });
+  const providerType = detectProviderType();
 
-    const hasRequiredRealmRole = requiredRealmRoles.length === 0 || requiredRealmRoles.some((role) => {
-      return userInfo.realm_access?.roles?.includes(role) ?? false;
-    });
-
-    if (!hasRequiredGroup || !hasRequiredRealmRole) {
-      return false;
-    }
+  if (providerType === 'realm_roles') {
+    const userRoles = userInfo.realm_access?.roles || [];
+    return requiredRealmRoles.every(role => userRoles.includes(role));
   }
 
-  return true;
+  if (providerType === 'entitlement') {
+    const entitlements = userInfo.eduperson_entitlement || [];
+    return requiredEntitlement.some(ent => entitlements.includes(ent));
+  }
+
+  console.warn('No REQUIRED_REALM_ROLES or REQUIRED_ENTITLEMENT set in environment or misconfiguration detected.');
+  return false;
 };
+
 
 type Handler<Req extends Request = Request, T = object> = (request: Req, context: T & object) => Promise<Response>;
 
@@ -147,10 +123,10 @@ export const validAuthDecorator = <Req extends Request>(
     const userInfo = userInfoValidation.data;
 
     if (!validateUserAccess(userInfo)) {
-      const providerType = detectProviderType(userInfo);
-      const errorMessage = providerType === 'egi' 
+      const providerType = detectProviderType();
+      const errorMessage = providerType === 'entitlement' 
         ? 'You lack the required entitlement to access this service. Please contact the service administrator.'
-        : 'You lack the required group membership to access this service. Please contact the service administrator.';
+        : 'You lack the required roles to access this service. Please contact the service administrator.';
       
       return error(403, errorMessage);
     }

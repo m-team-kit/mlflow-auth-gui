@@ -6,9 +6,9 @@ export const UserInfoResponse = z.object({
   email: z.string(),
   email_verified: z.boolean(),
 
-  // AI4EOSC specific
-  groups: z.optional(z.array(z.string())),
-  group_membership: z.optional(z.array(z.string())),
+  // OIDC-Option 2 (Realm Roles)
+  // groups: z.optional(z.array(z.string())),
+  // group_membership: z.optional(z.array(z.string())),
   realm_access: z.optional(z.object({
     roles: z.array(z.string()),
   })),
@@ -23,7 +23,7 @@ export const UserInfoResponse = z.object({
   name: z.optional(z.string()),
   upn: z.optional(z.string()),
 
-  // EGI specific
+  // OIDC- Option 1 (Entitlements)
   eduperson_entitlement: z.optional(z.array(z.string()))
 });
 
@@ -37,15 +37,15 @@ export const IntrospectionResponse = z.object({
   iss: z.string(),
   scope: z.string(),
 
-  // EGI-specific (optional)
+  // OIDC- Option 1 (Entitlements) -optional
   eduperson_entitlement: z.optional(z.array(z.string())),
 
-  // AI4EOSC-specific (optional)
-  groups: z.optional(z.array(z.string())),
+  // OIDC-Option 2 (Realm Roles) -optional
+  //groups: z.optional(z.array(z.string())),
   realm_access: z.optional(z.object({
     roles: z.array(z.string()),
   })),
-  // add more fields here if needed
+
 });
 
 export type IntrospectionResponse = z.infer<typeof IntrospectionResponse>;
