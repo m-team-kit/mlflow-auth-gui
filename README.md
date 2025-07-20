@@ -11,7 +11,7 @@ This web application provides a Web GUI to the [MLflow Authentication API](https
 GUI provides:
 * self-registration of users in MLflow
 * self-registration service requires Authentication via a pre-configured OIDC Provider (e.g. [EGI Check-In](https://docs.egi.eu/users/aai/check-in/))
-* one can limit users eligible for self-registration using `REQUIRED_ENTITLEMENT`
+* one can limit users eligible for self-registration using either `REQUIRED_ENTITLEMENT` (`eduperson_entitlement`) OR `REQUIRED_REALM_ROLES` (`realm.roles`), depending on what Identity Provider (IdP) supports
 * created in the MLflow user name is the email address retrieved from the OIDC token (registered email)
 * optionally, the MLflow user credentials are stored in the HashiCorp Vault Secret storage via AI4OS Platform API ([ai4-papi](https://github.com/ai4os/ai4-papi)) 
 * after the user is registered in MLflow, he/she can:

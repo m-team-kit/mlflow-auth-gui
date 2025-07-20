@@ -6,8 +6,10 @@ export const UserInfoResponse = z.object({
   email: z.string(),
   email_verified: z.boolean(),
 
-  // OIDC- Option 1 (Entitlements)
+  // OIDC- Option 1a (Entitlements)
   eduperson_entitlement: z.optional(z.array(z.string())),
+  // OIDC- Option 1b (Entitlements)
+  entitlements: z.optional(z.array(z.string())),
 
   // OIDC-Option 2 (Realm Roles)
   // groups: z.optional(z.array(z.string())),
@@ -29,6 +31,7 @@ export const UserInfoResponse = z.object({
 });
 export type UserinfoResponse = z.infer<typeof UserInfoResponse>;
 
+// IntrospectionResponse is currently not used vk@250719
 export const IntrospectionResponse = z.object({
   active: z.boolean(),
   client_id: z.string(),
@@ -37,10 +40,12 @@ export const IntrospectionResponse = z.object({
   iss: z.string(),
   scope: z.string(),
 
-  // OIDC- Option 1 (Entitlements) -optional
+  // OIDC- Option 1 (Entitlements) - optional
   eduperson_entitlement: z.optional(z.array(z.string())),
+  // OIDC- Option 1b (Entitlements)
+  entitlements: z.optional(z.array(z.string())),
 
-  // OIDC-Option 2 (Realm Roles) -optional
+  // OIDC-Option 2 (Realm Roles) - optional
   //groups: z.optional(z.array(z.string())),
   realm_access: z.optional(z.object({
     roles: z.array(z.string()),
