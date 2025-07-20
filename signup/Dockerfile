@@ -4,7 +4,7 @@ WORKDIR /app
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-COPY [".env", ".eslintrc.json", ".prettierrc", "next.config.js", "next-env.d.ts", "package.json", "postcss.config.js", "tailwind.config.ts", "tsconfig.json", "pnpm-lock.yaml", "./"]
+COPY [".env.local", ".eslintrc.json", ".prettierrc", "next.config.js", "next-env.d.ts", "package.json", "postcss.config.js", "tailwind.config.ts", "tsconfig.json", "pnpm-lock.yaml", "./"]
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
@@ -46,6 +46,10 @@ COPY --from=prod-build /app/next.config.js .
 #COPY --from=prod-build /app/public ./public
 COPY --from=prod-build /app/.next/static ./.next/static
 COPY --from=prod-build /app/.next/standalone ./
+
+# delete .env and/or .env.local if exist
+RUN if [ -e .env ] ; then rm .env ; fi && \
+    if [ -e .env.local ] ; then rm .env.local ; fi
 
 EXPOSE 3000
 CMD ["node", "server.js"]

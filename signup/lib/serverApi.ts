@@ -6,15 +6,18 @@ const localApiAuthorization = `Basic ${Buffer.from(
 
 const HOSTNAME = process.env['MLFLOW_HOSTNAME'] ?? 'http://localhost';
 
+// OAUTH_INTROSPECTION_ENDPOINT is currently not used vk@250719
 //const OAUTH_INTROSPECTION =
 //  process.env['OAUTH_INTROSPECTION_ENDPOINT'] ??
 //  'https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/token/introspect';
+//console.log('serverApi.OAUTH_INTROSPECTION:', OAUTH_INTROSPECTION.trim());
+
 const OAUTH_USERINFO =
   process.env['OAUTH_USERINFO_ENDPOINT'] ??
   'https://aai-demo.egi.eu/auth/realms/egi/protocol/openid-connect/userinfo';
 
-//console.log('serverApi.OAUTH_INTROSPECTION:', OAUTH_INTROSPECTION.trim());
-console.log('serverApi.OAUTH_USERINFO:', OAUTH_USERINFO.trim());
+// uncomment for debugging
+//console.log('serverApi.OAUTH_USERINFO:', OAUTH_USERINFO.trim());
 
 export const SECRETS_VO = process.env['USER_CREDENTIALS_SECRETS_VO'] ?? '';
 export const SECRETS_API = process.env['USER_CREDENTIALS_SECRETS_API'] ?? '';
