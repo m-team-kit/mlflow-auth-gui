@@ -11,7 +11,7 @@ This web application provides a Web GUI to the [MLflow Authentication API](https
 GUI provides:
 * self-registration of users in MLflow
 * self-registration service requires Authentication via a pre-configured OIDC Provider (e.g. [EGI Check-In](https://docs.egi.eu/users/aai/check-in/))
-* one can limit users eligible for self-registration using `REQUIRED_ENTITLEMENT`
+* one can limit users eligible for self-registration using either `REQUIRED_ENTITLEMENT` (`eduperson_entitlement`) OR `REQUIRED_REALM_ROLES` (`realm.roles`), depending on what Identity Provider (IdP) supports
 * created in the MLflow user name is the email address retrieved from the OIDC token (registered email)
 * optionally, the MLflow user credentials are stored in the HashiCorp Vault Secret storage via AI4OS Platform API ([ai4-papi](https://github.com/ai4os/ai4-papi)) 
 * after the user is registered in MLflow, he/she can:
@@ -60,6 +60,12 @@ Use:
 docker compose -f compose.yml -f compose.prod.yml up -d
 ```
 
+To re-build one of the services, e.g. "signup", use:
+
+```bash
+docker compose -f compose.yml -f compose.prod.yml up -d --build signup
+```
+
 ## Usage
 For the example usage, please, see [https://docs.ai4os.eu/en/latest/user/howto/mlops/mlflow.html](https://docs.ai4os.eu/en/latest/user/howto/mlops/mlflow.html)
 
@@ -69,4 +75,4 @@ Please, see our [CONTRIBUTING](CONTRIBUTING.md) description and the [CODE OF CON
 ## License
 This code is distributed under the Apache 2.0 License. Please, see the [LICENSE](LICENSE) file.
 
-Copyright (c) 2023 - 2024 Karlsruhe Institute of Technology - Scientific Computing Center.
+Copyright (c) 2023 - 2025 Karlsruhe Institute of Technology - Scientific Computing Center.

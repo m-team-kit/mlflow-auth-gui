@@ -50,6 +50,7 @@ services:
       args:
         OIDC_AUTHORITY: ${OIDC_AUTHORITY}
         OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
+        OIDC_SCOPE: ${OIDC_SCOPE}
         OIDC_REDIRECT_URI: https://${DOMAIN}/signup
         PRIVACY_POLICY_URL: ${PRIVACY_POLICY_URL}
         TERMS_OF_USE_URL: ${TERMS_OF_USE_URL}

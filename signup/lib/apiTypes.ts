@@ -3,24 +3,58 @@ import { ExperimentPermission, Permission, RegisteredModelPermission } from '@/l
 
 export const UserInfoResponse = z.object({
   sub: z.string(),
-  eduperson_entitlement: z.optional(z.array(z.string())),
   email: z.string(),
   email_verified: z.boolean(),
+
+  // OIDC- Option 1a (Entitlements)
+  eduperson_entitlement: z.optional(z.array(z.string())),
+  // OIDC- Option 1b (Entitlements)
+  entitlements: z.optional(z.array(z.string())),
+
+  // OIDC-Option 2 (Realm Roles)
+  // groups: z.optional(z.array(z.string())),
+  // group_membership: z.optional(z.array(z.string())),
+  realm_access: z.optional(z.object({
+    roles: z.array(z.string()),
+  })),
+
+  resource_access: z.optional(z.record(z.object({
+    roles: z.array(z.string()),
+  }))),
+  
+  preferred_username: z.optional(z.string()),
+  given_name: z.optional(z.string()),
+  family_name: z.optional(z.string()),
+  name: z.optional(z.string()),
+  upn: z.optional(z.string()),
+
 });
 export type UserinfoResponse = z.infer<typeof UserInfoResponse>;
 
+// IntrospectionResponse is currently not used vk@250719
 export const IntrospectionResponse = z.object({
   active: z.boolean(),
   client_id: z.string(),
-  eduperson_entitlement: z.optional(z.array(z.string())),
   email: z.string(),
   email_verified: z.boolean(),
   iss: z.string(),
   scope: z.string(),
+
+  // OIDC- Option 1 (Entitlements) - optional
+  eduperson_entitlement: z.optional(z.array(z.string())),
+  // OIDC- Option 1b (Entitlements)
+  entitlements: z.optional(z.array(z.string())),
+
+  // OIDC-Option 2 (Realm Roles) - optional
+  //groups: z.optional(z.array(z.string())),
+  realm_access: z.optional(z.object({
+    roles: z.array(z.string()),
+  })),
+
 });
 export type IntrospectionResponse = z.infer<typeof IntrospectionResponse>;
 
-const Password = z.string().min(1, 'Password must be at least 1 character long');
+const Password = z.string().min(3, 'Password must be at least 3 character long');
 
 export const CreateUserRequest = z.object({
   password: Password,
