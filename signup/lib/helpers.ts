@@ -66,7 +66,7 @@ const detectProviderType = (): 'realm_roles' | 'entitlement' | 'none' => {
   const hasEntitlementEnv = !!process.env['REQUIRED_ENTITLEMENT'];
 
   if (hasRealmRolesEnv && hasEntitlementEnv) {
-    console.error('Misconfiguration: Both REQUIRED_REALM_ROLES and REQUIRED_ENTITLEMENT are set. Only one must be defined.');
+    console.error('Misconfiguration: Both REQUIRED_REALM_ROLES and REQUIRED_ENTITLEMENT are set. Only one must be defined!');
     return 'none';
   }
 

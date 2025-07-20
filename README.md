@@ -60,6 +60,12 @@ Use:
 docker compose -f compose.yml -f compose.prod.yml up -d
 ```
 
+To re-build one of the services, e.g. "signup", use:
+
+```bash
+docker compose -f compose.yml -f compose.prod.yml up -d --build signup
+```
+
 ## Usage
 For the example usage, please, see [https://docs.ai4os.eu/en/latest/user/howto/mlops/mlflow.html](https://docs.ai4os.eu/en/latest/user/howto/mlops/mlflow.html)
 
@@ -69,4 +75,4 @@ Please, see our [CONTRIBUTING](CONTRIBUTING.md) description and the [CODE OF CON
 ## License
 This code is distributed under the Apache 2.0 License. Please, see the [LICENSE](LICENSE) file.
 
-Copyright (c) 2023 - 2024 Karlsruhe Institute of Technology - Scientific Computing Center.
+Copyright (c) 2023 - 2025 Karlsruhe Institute of Technology - Scientific Computing Center.

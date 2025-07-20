@@ -6,6 +6,9 @@ export const UserInfoResponse = z.object({
   email: z.string(),
   email_verified: z.boolean(),
 
+  // OIDC- Option 1 (Entitlements)
+  eduperson_entitlement: z.optional(z.array(z.string())),
+
   // OIDC-Option 2 (Realm Roles)
   // groups: z.optional(z.array(z.string())),
   // group_membership: z.optional(z.array(z.string())),
@@ -23,10 +26,7 @@ export const UserInfoResponse = z.object({
   name: z.optional(z.string()),
   upn: z.optional(z.string()),
 
-  // OIDC- Option 1 (Entitlements)
-  eduperson_entitlement: z.optional(z.array(z.string()))
 });
-
 export type UserinfoResponse = z.infer<typeof UserInfoResponse>;
 
 export const IntrospectionResponse = z.object({
@@ -47,10 +47,9 @@ export const IntrospectionResponse = z.object({
   })),
 
 });
-
 export type IntrospectionResponse = z.infer<typeof IntrospectionResponse>;
 
-const Password = z.string().min(1, 'Password must be at least 1 character long');
+const Password = z.string().min(3, 'Password must be at least 3 character long');
 
 export const CreateUserRequest = z.object({
   password: Password,
