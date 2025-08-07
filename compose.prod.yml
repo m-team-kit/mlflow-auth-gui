@@ -20,14 +20,18 @@ services:
       - "443:443"
 
   mlflow:
+    entrypoint: /bin/bash
     command:
-      - server
-      - --backend-store-uri=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
-      - --artifacts-destination=/mlruns
-      - --host=0.0.0.0
-      - --port=5000
-      - --app-name=basic-auth
-      - --gunicorn-opts="-t600"
+      - -c
+      - |
+        mlflow db upgrade postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME} && \
+        mlflow server \
+          --backend-store-uri=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME} \
+          --artifacts-destination=/mlruns \
+          --host=0.0.0.0 \
+          --port=5000 \
+          --app-name=basic-auth \
+          --gunicorn-opts="-t600"
     labels:
       traefik.http.routers.mlflow.tls: true
       traefik.http.routers.mlflow.tls.certResolver: letsEncrypt

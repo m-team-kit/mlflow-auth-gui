@@ -2,14 +2,16 @@
 -- This code is distributed under the Apache 2.0 License
 -- Please, see the LICENSE file
 --
--- SQL Query to assign read permissions to the user "mlflowAgent-read-all" for experiments and registered models
+-- SQL Query to assign read permissions to the user '${READER_AGENT}'" for experiments and registered models
 --
 -- @author: lisanaberberi
 -- @date: 2025-07-11
 
 -- Auto Read Permissions Setup for MLflow
--- This script creates triggers to automatically grant read permissions to 'mlflowAgent-read-all' user
+-- This script creates triggers to automatically grant read permissions to '${READER_AGENT}' user
 -- for all new experiments and registered models
+
+
 
 -- First, ensure the read-all user exists
 INSERT OR IGNORE INTO experiment_permissions (experiment_id, user_id, permission)
@@ -19,13 +21,20 @@ SELECT DISTINCT
     'READ' as permission
 FROM experiment_permissions ep
 CROSS JOIN users u
-WHERE u.username = 'mlflowAgent-read-all'
+WHERE u.username = '${READER_AGENT}'
 AND NOT EXISTS (
     SELECT 1 
     FROM experiment_permissions ep2 
     WHERE ep2.experiment_id = ep.experiment_id 
     AND ep2.user_id = u.id
 );
+
+-- if the user does not exist, below is the script to create it
+
+-- Create the user (replace with actual password hash)
+-- INSERT INTO users (username, password_hash, is_admin) 
+-- VALUES (${READER_AGENT}, 'your_password_hash_here', 0);
+
 
 -- Grant read permissions to existing registered models
 INSERT OR IGNORE INTO registered_model_permissions (name, user_id, permission)
@@ -35,7 +44,7 @@ SELECT DISTINCT
     'READ' as permission
 FROM registered_model_permissions rmp
 CROSS JOIN users u
-WHERE u.username = 'mlflowAgent-read-all'
+WHERE u.username = '${READER_AGENT}'
 AND NOT EXISTS (
     SELECT 1 
     FROM registered_model_permissions rmp2 
@@ -49,13 +58,13 @@ AFTER INSERT ON experiment_permissions
 WHEN NOT EXISTS (
     SELECT 1 FROM experiment_permissions
     WHERE experiment_id = NEW.experiment_id
-    AND user_id = (SELECT id FROM users WHERE username = 'mlflowAgent-read-all')
+    AND user_id = (SELECT id FROM users WHERE username = '${READER_AGENT}')
 )
 BEGIN
     INSERT INTO experiment_permissions (experiment_id, user_id, permission)
     VALUES (
         NEW.experiment_id,
-        (SELECT id FROM users WHERE username = 'mlflowAgent-read-all'),
+        (SELECT id FROM users WHERE username = '${READER_AGENT}'),
         'READ'
     );
 END;
@@ -66,13 +75,13 @@ AFTER INSERT ON registered_model_permissions
 WHEN NOT EXISTS (
     SELECT 1 FROM registered_model_permissions
     WHERE name = NEW.name
-    AND user_id = (SELECT id FROM users WHERE username = 'mlflowAgent-read-all')
+    AND user_id = (SELECT id FROM users WHERE username = '${READER_AGENT}')
 )
 BEGIN
     INSERT INTO registered_model_permissions (name, user_id, permission)
     VALUES (
         NEW.name,
-        (SELECT id FROM users WHERE username = 'mlflowAgent-read-all'),
+        (SELECT id FROM users WHERE username = '${READER_AGENT}'),
         'READ'
     );
 END;

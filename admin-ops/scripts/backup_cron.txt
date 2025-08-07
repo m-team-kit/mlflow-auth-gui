@@ -1,0 +1,6 @@
+5 0 * * * /srv/backup_script.sh && find /backup_files -name '*postgres*tar.gz' -type f -mtime +14 -exec rm {} \; 
+0 0 * * * /srv/backup_script_sqlite.sh && find /backup_files -name '*sqlite*tar.gz' -type f -mtime +14 -exec rm {} \;
+0 3 * * * /srv/mlflow_gc.sh
+# */15 * * * * /srv/mlflow-exp-add-reader.sh >> /backup_files/mlflow-exp-add-reader-$(date +\%y\%m\%d).log 2>&1 && find /backup_files -name 'mlflow-exp-add-reader-*.log' -type f -mtime +7 -exec rm {} \;
+# 0 2 * * * /srv/mlflow-exp-add-reader.sh -a >> /backup_files/mlflow-exp-add-reader-$(date +\%y\%m\%d).log 2>&1 && find /backup_files -name 'mlflow-exp-add-reader-*.log' -type f -mtime +7 -exec rm {} \;
+# remember to end this file with an empty new line

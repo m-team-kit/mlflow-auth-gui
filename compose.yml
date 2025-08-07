@@ -82,10 +82,10 @@ services:
       timeout: 5s
       retries: 5
 
-  backup_db:
+  admin-ops:
     restart: always
     build:
-      context: ./backup_db
+      context: ./admin-ops
       args:
         MLFLOW_VERSION: ${MLFLOW_VERSION}
     init: true

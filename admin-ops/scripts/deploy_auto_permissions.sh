@@ -3,7 +3,7 @@
 # This code is distributed under the Apache 2.0 License
 # Please, see the LICENSE file
 #
-# SQL Query to assign read permissions to the user "mlflowAgent-read-all" for experiments and registered models
+# SQL Query to assign read permissions to the user "READER_AGENT" for experiments and registered models
 #
 # @author: lisanaberberi
 # @date: 2025-07-11
@@ -18,7 +18,14 @@ set -e
 # Configuration
 DB_PATH="${1:-/var/data/user-data/${AUTH_DB_FILE}}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SQL_FILE="$SCRIPT_DIR/auto_read_permissions.sql"
+SQL_FILE="$SCRIPT_DIR/triggers/auto_read_permissions.sql"
+
+
+# Check that READER_AGENT is set
+if [[ -z "$READER_AGENT" ]]; then
+    echo "Error: READER_AGENT environment variable is not set."
+    exit 1
+fi
 
 # Validate inputs
 if [[ ! -f "$DB_PATH" ]]; then
@@ -48,12 +55,12 @@ else
 fi
 
 # Verify the user exists
-USER_EXISTS=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM users WHERE username='mlflowAgent-read-all';")
+USER_EXISTS=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM users WHERE username='${READER_AGENT}';")
 
 if [[ $USER_EXISTS -eq 1 ]]; then
-    echo "mlflowAgent-read-all user exists"
+    echo "'${READER_AGENT}' user exists"
 else
-    echo "Warning: mlflowAgent-read-all user not found"
+    echo "Warning: '${READER_AGENT}' user not found"
 fi
 
 echo "Deployment complete!"
