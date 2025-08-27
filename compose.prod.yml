@@ -4,7 +4,6 @@ services:
       # for some reason extending does *not* merge command, so I'm pasting these here as well
       - "--entrypoints.web.address=:80"
       - "--providers.docker"
-
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
@@ -20,18 +19,14 @@ services:
       - "443:443"
 
   mlflow:
-    entrypoint: /bin/bash
     command:
-      - -c
-      - |
-        mlflow db upgrade postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME} && \
-        mlflow server \
-          --backend-store-uri=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME} \
-          --artifacts-destination=/mlruns \
-          --host=0.0.0.0 \
-          --port=5000 \
-          --app-name=basic-auth \
-          --gunicorn-opts="-t600"
+      - server
+      - --backend-store-uri=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+      - --artifacts-destination=/mlruns
+      - --host=0.0.0.0
+      - --port=5000
+      - --app-name=basic-auth
+      - --gunicorn-opts="-t600"
     labels:
       traefik.http.routers.mlflow.tls: true
       traefik.http.routers.mlflow.tls.certResolver: letsEncrypt
