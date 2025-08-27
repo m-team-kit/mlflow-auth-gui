@@ -4,7 +4,6 @@ services:
       # for some reason extending does *not* merge command, so I'm pasting these here as well
       - "--entrypoints.web.address=:80"
       - "--providers.docker"
-
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.websecure.address=:443"

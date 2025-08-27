@@ -27,7 +27,10 @@ RUN mkdir -p /backup_files
 # Set the working directory to /srv
 WORKDIR /srv
 
+RUN mkdir -p /triggers
+
 ADD --chmod=755 scripts/*.sh /srv/
+ADD --chmod=644 scripts/triggers/auto_read_permissions.sql /srv/triggers/
 
 # Create folder to restore files
 RUN mkdir -p /restore_files
