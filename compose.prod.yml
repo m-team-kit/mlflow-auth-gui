@@ -24,9 +24,11 @@ services:
       - --backend-store-uri=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
       - --artifacts-destination=/mlruns
       - --host=0.0.0.0
+      - --allowed-hosts=${DOMAIN},mlflow:5000
       - --port=5000
       - --app-name=basic-auth
-      - --gunicorn-opts="-t600"
+      - --uvicorn-opts="--timeout-keep-alive=300"
+      #- --gunicorn-opts="-t600" # since mlflow v3.5 uvicorn is used by default, see line above
     labels:
       traefik.http.routers.mlflow.tls: true
       traefik.http.routers.mlflow.tls.certResolver: letsEncrypt

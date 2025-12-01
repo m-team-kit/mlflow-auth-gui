@@ -1,7 +1,7 @@
 services:
   reverse-proxy:
     restart: unless-stopped
-    image: traefik:v2.10
+    image: traefik:v3.5
     networks:
       - mlflow
     command:
@@ -63,7 +63,8 @@ services:
       - "traefik.http.routers.signup.rule=Host(`${DOMAIN}`) && PathPrefix(`/signup`)"
 
   database:
-    image: postgres:latest
+    #image: postgres:latest
+    image: postgres:16
     restart: always
     user: postgres
     # non-root user inside container!
