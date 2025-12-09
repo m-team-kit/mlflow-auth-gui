@@ -64,7 +64,7 @@ services:
 
   database:
     #image: postgres:latest
-    image: postgres:16
+    image: postgres:${POSTGRES_DOCKER_TAG}
     restart: always
     user: postgres
     # non-root user inside container!
