@@ -7,9 +7,9 @@ services:
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.transport.respondingtimeouts.idletimeout=300"
-      - "--entrypoints.websecure.transport.respondingtimeouts.readtimeout=300"
-      - "--entrypoints.websecure.transport.respondingtimeouts.writetimeout=300"
+      - "--entrypoints.websecure.transport.respondingtimeouts.idletimeout=900"
+      - "--entrypoints.websecure.transport.respondingtimeouts.readtimeout=900"
+      - "--entrypoints.websecure.transport.respondingtimeouts.writetimeout=900"
       - "--certificatesresolvers.letsEncrypt.acme.storage=/etc/traefik/mounted/acme.json"
       - "--certificatesresolvers.letsEncrypt.acme.email=${LETSENCRYPT_EMAIL}"
       - "--certificatesresolvers.letsEncrypt.acme.tlschallenge=true"
@@ -30,7 +30,7 @@ services:
       - --allowed-hosts=${DOMAIN},mlflow:5000
       - --port=5000
       - --app-name=basic-auth
-      - --uvicorn-opts="--timeout-keep-alive=300"
+      - --uvicorn-opts="--timeout-keep-alive=900"
       #- --gunicorn-opts="-t600" # since mlflow v3.5 uvicorn is used by default, see line above
     labels:
       traefik.http.routers.mlflow.tls: true
