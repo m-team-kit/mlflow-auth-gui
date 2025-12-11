@@ -7,9 +7,9 @@ services:
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.transport.respondingtimeouts.idletimeout=900"
-      - "--entrypoints.websecure.transport.respondingtimeouts.readtimeout=900"
-      - "--entrypoints.websecure.transport.respondingtimeouts.writetimeout=900"
+      - "--entrypoints.websecure.transport.respondingtimeouts.idletimeout=600"
+      - "--entrypoints.websecure.transport.respondingtimeouts.readtimeout=600"
+      - "--entrypoints.websecure.transport.respondingtimeouts.writetimeout=600"
       - "--certificatesresolvers.letsEncrypt.acme.storage=/etc/traefik/mounted/acme.json"
       - "--certificatesresolvers.letsEncrypt.acme.email=${LETSENCRYPT_EMAIL}"
       - "--certificatesresolvers.letsEncrypt.acme.tlschallenge=true"
@@ -22,16 +22,22 @@ services:
       - "443:443"
 
   mlflow:
+    environment:
+      - MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD=True
+      - MLFLOW_MULTIPART_UPLOAD_CHUNK_SIZE=104857600   # 100MB
+      - MLFLOW_ARTIFACT_UPLOAD_MAX_WORKERS=2
+      - MLFLOW_HTTP_REQUEST_TIMEOUT=600
+      - MLFLOW_SERVER_ALLOWED_HOSTS=${DOMAIN},mlflow:5000  # works for uvicorn AND gunicorn
     command:
       - server
       - --backend-store-uri=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
       - --artifacts-destination=/mlruns
       - --host=0.0.0.0
-      - --allowed-hosts=${DOMAIN},mlflow:5000
       - --port=5000
       - --app-name=basic-auth
-      - --uvicorn-opts="--timeout-keep-alive=900"
-      #- --gunicorn-opts="-t600" # since mlflow v3.5 uvicorn is used by default, see line above
+      #- --uvicorn-opts="--timeout-keep-alive=600"
+      #- --gunicorn-opts="--workers 1"
+      - --gunicorn-opts="-t600" # since mlflow v3.5 uvicorn (async) is used by default, but gunicorn is faster for artifact upload (sync)
     labels:
       traefik.http.routers.mlflow.tls: true
       traefik.http.routers.mlflow.tls.certResolver: letsEncrypt
